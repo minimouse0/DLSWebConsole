@@ -10,7 +10,7 @@ function onLoginClick(){
     document.cookie="host="+form.name.value;
     document.cookie="token="+form.token.value;
     // 跳转到指定的 URL 地址
-    location.href ="/DLS.html";
+    location.href =window.location.href.replace("login.html","DLS.html");
 
 }
 </script>
