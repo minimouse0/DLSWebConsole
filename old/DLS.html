@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DLS</title>
+<style>
+    .console_controller {
+		margin-top:100px;
+		margin-left:30px;
+		margin-right:30px;
+		height:400px;
+		border: 1px solid #bcbcbc;
+		border-radius:15px;
+		background-color: #fff;
+		box-shadow: 0px 0px 10px #ccc;
+    }
+	.console_output{
+		margin-left:10px;
+		margin-top:10px;
+		height:88%;
+		width:98%;
+		border:2px solid #303030;
+		border-radius:8px;
+	}
+	.console_cmd_executer{
+		width:98%;
+	}
+	.console_cmd{
+		margin-top:5px;
+		margin-left:10px;
+		width:90%;
+	}
+	.switch{
+		width:95px;
+		border:none;
+		background-color:#bbb;
+		transition: background-color 0.2s; 
+		color:white;
+	}
+	.switch:hover{
+		background-color: aliceblue;
+	}
+	.execute{
+		margin-right:10px;
+		width:70px;
+		border:none;
+		background-color:#bbb;
+		transition: background-color 0.2s; 
+		color:white;
+	}
+</style>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+
+const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
+const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+//点击开关
+function get_server_status(callback){
+	var settings = {
+		"url": host+"/process_status",
+		"method": "GET",
+		"timeout": 0,
+		"headers": {
+			"User-Agent": "Apifox/1.0.0 (https://apifox.com)"
+   		},
+	};
+	$.ajax(settings).done((response)=>{
+		callback(response.online);
+	});
+}
+function _switch(){
+	//首先获取服务器是否开启，然后执行开机或关机
+		switch_button=document.getElementById('switch');
+		get_server_status((status)=>{
+			if(status){//服务器开启则执行关机
+				switch_button_color(switch_button,1);
+				execute("stop");
+			}
+			else{//服务器关闭则执行开机
+				switch_button_color(switch_button,0);
+				execute("start");
+			}
+			switch_button_wait_status_change(switch_button,status);//执行开关命令后等待改变开关按钮颜色
+		})
+
+
+}
+function switch_button_wait_status_change(switch_button,old_status){
+		let switch_button_task_id=setInterval(()=>{//轮询进程状态等待其改变
+			get_server_status((current_status)=>{
+				if(current_status!=old_status){//一旦有一次请求发现状态改变
+					console.log(current_status)
+					switch_button_color(switch_button,Number(current_status));
+					clearInterval(switch_button_task_id);//既然已经发现状态改变，执行完改变后立刻停止轮询
+				}
+			})
+		},500)		
+
+}
+function switch_button_color(switch_button,status){
+	switch(status){
+		case 0:switch_button.style["background-color"]="#bbb";break;
+		case 1:switch_button.style["background-color"]="green";break;
+	}
+	
+}
+//由用户输入指令并点击执行按钮
+function executeHandler(event) {
+    let form = document.getElementById("execute_input");
+	execute(form.console_cmd.value);
+}
+//向控制台发送指令
+function execute(cmd){
+	var settings = {
+		"url": host+"/execute",
+		"method": "POST",
+		"timeout": 0,
+		"headers": {
+			"User-Agent": "Apifox/1.0.0 (https://apifox.com)",
+			"Content-Type": "application/json"
+		},
+		"data": JSON.stringify({
+			"token": token,
+			"cmd": [
+				cmd
+			]
+		}),
+	};
+
+	$.ajax(settings).done(function (response) {
+		//这里做成如果发送成功就调用css让执行键闪一下绿灯
+		//console.log(response);
+		if(response.msg=="提交命令成功!"){
+			let execute_button=document.getElementById('execute');
+			execute_button.style["background-color"]="#77fc5ccf"
+			setTimeout(()=>execute_button.style["background-color"]="#bbb",150);
+		}
+	});
+}
+//加载网页时立即从服务器获取进程状态
+get_server_status((status)=>{
+	switch_button_color(document.getElementById('switch'),Number(status));
+})
+</script>
+</head>
+
+<body>
+	<p>
+		<button type="button" class="switch" id="switch" onclick="_switch()">开关</button>
+		<button type="button" class="switch" id="switch" onclick="execute('startBak')">备份</button>
+		<br>
+		<div class="console_controller">
+			<iframe src="serverconsole.html" class="console_output" frameborder="0"></iframe>
+			<br>
+			<div class="console_cmd_executer">
+				<form id="execute_input" method="post">
+					<input type="text" id="console_cmd" name="console_cmd" class="console_cmd">
+					<button type="button" class="execute" id="execute" onclick="executeHandler()">执行</button>
+				</form>
+				
+			</div>
+			
+		</div>
+		<br>
+		<div >
+			CPU:
+		</div>
+		<div >
+			内存:
+		</div>
+		<div >
+			硬盘:
+		</div>
+	</p>
+
+</body>
+</html>

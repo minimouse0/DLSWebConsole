@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>登录DLS控制台</title>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script> 
+<script>
+function onLoginClick(){
+    let form = document.getElementById("login_info");
+    document.cookie="host="+form.name.value;
+    document.cookie="token="+form.token.value;
+    // 跳转到指定的 URL 地址
+    location.href ="/DLS.html";
+
+}
+</script>
+</head>
+<body>
+    <div>
+        登录到DLS控制台
+        <form action="/" id="login_info" method="post">
+            <label for="name">服务器的主机地址:</label>
+			<input type="text" id="name" name="name" required>
+            <br>
+            <label for="name">token:</label>
+			<input type="password" id="token" name="token" required>
+            <br>
+			<button type="button" onclick="onLoginClick()">登录</button>
+        </form>
+    </div>
+</body>
+</html>
