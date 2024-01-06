@@ -1,0 +1,49 @@
+body{
+    display:flex;
+}
+.panel{
+    display:flex;
+    margin-left:15px;
+    margin-top:15px;
+    height:calc(100vh - 45px);
+    width:calc(100% - 100px);
+}
+.console_controller{
+    width:38%;
+    height:100%;
+    border: 1px solid #bcbcbc;
+    border-radius:15px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px #ccc;
+}
+.executer{
+    display:flex;
+    position:relative;
+    width:calc(100% - 25px);
+    left:12px;
+    top:calc(100% - 65px);
+    height:50px;
+}
+.command{
+    height:100%;
+    width:calc(100% - 65px);
+    border-radius:50px;
+    box-shadow: 0px 0px 10px #ccc;
+}
+.command_input{
+    border:0cm;
+}
+.panel_right{
+    margin-left:15px;
+    width:calc(62% - 15px)
+}
+.send_button{
+    margin-left:15px;
+    width:50px;
+    height:50px;
+    margin-bottom:15px;
+    border:0px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 10px #ccc;
+    background-color: #ccc;
+}

@@ -1,0 +1,33 @@
+.dasher{
+    height:calc(100% - 115px);
+    width:100%;
+}
+.charts{
+    display:flex;
+    width:100%;
+    height:calc(100% - 80px);
+}
+.cpu_chart{
+    width:calc(calc(100% - 15px) / 2);
+    height: 100%;
+    border: 1px solid #bcbcbc;
+    border-radius:15px;
+    box-shadow: 0px 0px 10px #ccc;
+}
+.mem_chart{
+    margin-left:15px;
+    width:calc(calc(100% - 15px) / 2);
+    height:100%;
+    border: 1px solid #bcbcbc;
+    border-radius:15px;
+    box-shadow: 0px 0px 10px #ccc;
+}
+.disk{
+    margin-top:15px;
+    height:50px;
+    width:100%;
+    border-radius:25px;
+    box-shadow: 0px 0px 10px #ccc;
+    background-color: white;
+    border: 0px solid #bcbcbc;
+}
