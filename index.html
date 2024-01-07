@@ -24,10 +24,14 @@ $(document).on('keypress',function(e) {
 		setTimeout(()=>{
 
 			document.getElementById('command').value="";
-		},100)
+		},30)
 		
     }
 });
+//加载网页时立即从服务器获取进程状态
+get_server_status((status)=>{
+	switch_button_color(document.getElementById('power'),Number(status));
+})
 })
 </script>
 </head>
@@ -80,16 +84,17 @@ $(document).on('keypress',function(e) {
 
 	<div class="power_buttons_container">
 		<button class="round_button" id="power">
-			<img src="maps/power.png" class="round_button_image">
+			<img src="maps/power.png" class="round_button_image" onclick="_switch()">
 		</button><br>
 		<button class="round_button">
-			<img src="maps/reset.png" class="round_button_image">
+			<img src="maps/reset.png" class="round_button_image" onclick="executeRestart()">
 		</button><br>
 		<button class="round_button" id="backup">
-			<img src="maps/backup.png" class="round_button_image">
+			<img src="maps/backup.png" class="round_button_image" onclick="executeBak()">
 		</button><br>
 		<button class="round_button" id="preferences">
-			<img src="maps/preferences.png" class="round_button_image"></button><br>
+			<img src="maps/preferences.png" class="round_button_image">
+		</button><br>
 		</button><br>
 	</div>
 	<div class="option_container">

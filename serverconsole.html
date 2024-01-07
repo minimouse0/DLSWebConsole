@@ -70,7 +70,7 @@ function refresh_console(){
             current_log_id=response.log_list[response.log_list.length-1].log_id;
             //有新输出，刷新完成后自动滚动到控制台底部
             var height = document.body.scrollHeight;
-            window.scroll({ top: height , left: 0, behavior: 'smooth'})
+            window.scroll({ top: height , left: 0})
         }
     });
 }
