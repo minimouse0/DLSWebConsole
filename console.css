@@ -34,17 +34,20 @@ body{
     z-index:2;
 }
 .command{
-    height:100%;
-    width:calc(100% - 65px);
-    border-radius:50px;
+    padding:10px 15px;
+    height:calc(100% - 20px);
+    width:calc(100% - 100px);
+    border-radius:25px;
     box-shadow: 0px 0px 10px #ccc;
+    font-family:'Courier New', Courier, monospace;
+    font-size:25px;
 }
 .command_input{
     border:0cm;
 }
 .panel_right{
     margin-left:15px;
-    width:calc(62% - 15px)
+    width:calc(62% - 15px);
 }
 .send_button{
     margin-left:15px;

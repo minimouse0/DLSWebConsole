@@ -1,7 +1,7 @@
 .panel{
-    width: 300px;
+    width: 36%;
     text-align: center;
-    line-height: 0px;
+    line-height: 15px;
      /*由于触发了BFC规范，可以解决margin塌陷，完成垂直的居中*/
     margin: 0 auto;
     padding-top:calc(40vh - 160px);
@@ -11,4 +11,36 @@
     margin: 0 auto;
     line-height: 400px;
     text-align: center;
+    padding-bottom: 15px;
+}
+.login_info~{
+    width:400px;
+    height:50px;
+    background-color: rgb(97, 168, 255);
+    border-radius:25px;
+    border: 0px solid #bcbcbc;
+    margin: 0 auto;
+    font-size:23px;
+    color:white;
+}
+.login_info{
+    margin:10px 0;
+    padding:0px 25px;
+    width:calc(100% - 50px);
+    height:50px;
+    background-color: rgb(97, 168, 255);
+    border-radius:25px;
+    font-size:26px;
+    border: 0px solid #bcbcbc;
+    color:white;
+}
+.login_button{
+    margin-top:10px;
+    width:100%;
+    height:50px;
+    background-color: rgb(97, 168, 255);
+    border-radius:25px;
+    font-size:26px;
+    border: 0px solid #bcbcbc;
+    color:white;
 }

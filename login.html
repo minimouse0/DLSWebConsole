@@ -8,7 +8,7 @@
 <script>
 function onLoginClick(){
     let form = document.getElementById("login_info");
-    document.cookie="host="+form.name.value;
+    document.cookie="host="+form.url.value;
     document.cookie="token="+form.token.value;
     // 跳转到指定的 URL 地址
     location.href =window.location.href.replace("login.html","index.html");
@@ -19,11 +19,9 @@ function onLoginClick(){
 <div class="panel">
     <img src="../maps/logo.svg" class="logo">
     <form action="/" id="login_info" method="post">
-        <input type="text" id="name" name="name" class="login_info" required>
-        <br>
-        <input type="password" id="token" name="token" class="login_info" required>
-        <br>
-        <button type="button" onclick="onLoginClick()">登录</button>
+        <input type="text" id="url" name="url" class="login_info" placeholder="API地址" required><br>
+        <input type="password" id="token" name="token" class="login_info" placeholder="token" required><br>
+        <button type="button" class="login_button" onclick="onLoginClick()">登录</button>
     </form>
 </div>
 </body>

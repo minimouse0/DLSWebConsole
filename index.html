@@ -8,6 +8,7 @@
 <link rel="stylesheet" type="text/css" href="console.css">
 <link rel="stylesheet" type="text/css" href="shortcuts.css">
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="panel.js"></script>
 <script>
 </script>
 </head>
@@ -15,10 +16,10 @@
 	<div class="panel">
 		<div class="console_controller">
 			<form class="executer">
-				<div class="command">
-					<input type="text" id="command" name="command" class="command_input">
-				</div>
-				<botton class="send_button" id="send">
+				<textarea id="command" placeholder="输入控制台命令" class="command">
+					
+				</textarea>
+				<botton class="send_button" id="send" onclick="executeCustomCmd(document.getElementById('command'))">
 					<img src="maps/send.png" class="send_button_image">
 				</botton>
 			</form>
