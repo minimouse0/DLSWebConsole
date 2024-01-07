@@ -1,0 +1,14 @@
+.panel{
+    width: 300px;
+    text-align: center;
+    line-height: 0px;
+     /*由于触发了BFC规范，可以解决margin塌陷，完成垂直的居中*/
+    margin: 0 auto;
+    padding-top:calc(40vh - 160px);
+}
+.logo{
+    width:200px;
+    margin: 0 auto;
+    line-height: 400px;
+    text-align: center;
+}
