@@ -12,7 +12,6 @@ function execute(cmd,callback){
 		"method": "POST",
 		"timeout": 0,
 		"headers": {
-			"User-Agent": "Apifox/1.0.0 (https://apifox.com)",
 			"Content-Type": "application/json"
 		},
 		"data": JSON.stringify({
