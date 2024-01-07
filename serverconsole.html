@@ -111,7 +111,8 @@ function parse_log(logs){
     for(log of logs){
         log_raw_text=log_raw_text+log.text+"<br>";
     }
-    //添加锚点
+    //添加空行来保证不输出不被下面输入框挡住
+    log_raw_text=log_raw_text+"<br><br><br>";
     return log_raw_text;
 }
 setInterval(()=>{
