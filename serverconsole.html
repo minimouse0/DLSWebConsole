@@ -9,10 +9,11 @@
             color:white;
         }
     </style>
+<script src="lib/cookie.js"></script>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
-const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
-const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+const host=parseCookie("host")
+const token=parseCookie("token")
 function scrollToBottom(){}
 function defscroller(){
 //文心一言生成的自动滚动到最底部的函数，不一定完全能用
@@ -51,6 +52,7 @@ let current_log_id=0;
 let logs=[];
 let last_new_log=new Date();
 function refresh_console(){
+    console.log()
     let settings = {
         "url": host+"/terminal_log?token="+token+"&log_id="+current_log_id.toString(),
         "method": "GET",

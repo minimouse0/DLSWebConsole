@@ -1,5 +1,8 @@
-const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
-const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+const host=parseCookie("host")
+const token=parseCookie("token")
+//const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
+//const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+
 
 /**
  * 向控制台发送指令
@@ -94,3 +97,17 @@ function executeBak(){
 function executeRestart(){
     execute("restart");
 }
+
+function get_server_load(callback){
+    var settings = {
+        "url": host+"/server_status",
+        "method": "GET",
+        "timeout": 0,
+    };
+
+    $.ajax(settings).done(function (response) {
+        callback(response);
+    });
+}
+let load_request_interval=1000;
+get_server_load((response)=>{});
