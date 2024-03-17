@@ -1,28 +1,31 @@
 <!doctype html>
 <html>
+
 <head>
-<meta charset="UTF-8">
-<title>DLS管理面板 - 请登录</title>
-<link rel="stylesheet" type="text/css" href="login.css">
-<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<script>
-function onLoginClick(){
-    let form = document.getElementById("login_info");
-    document.cookie="host="+form.url.value;
-    document.cookie="token="+form.token.value;
-    // 跳转到指定的 URL 地址
-    location.href =window.location.href.replace("login.html","index.html");
-}
-</script>
+    <meta charset="UTF-8">
+    <title>DLS管理面板 - 请登录</title>
+    <link rel="stylesheet" type="text/css" href="css/basic.css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
 </head>
+
 <body>
-<div class="panel">
-    <img src="../maps/logo.svg" class="logo">
-    <form action="/" id="login_info" method="post">
-        <input type="text" id="url" name="url" class="login_info" placeholder="API地址" required><br>
-        <input type="password" id="token" name="token" class="login_info" placeholder="token" required><br>
-        <button type="button" class="login_button" onclick="onLoginClick()">登录</button>
-    </form>
-</div>
+    <div class="panel">
+        <img src="maps/logo.svg" class="logo">
+        <form action="/" id="login_form" method="post">
+            <input type="text" id="url" name="url" class="login_info" placeholder="API地址" required><br>
+            <input type="password" id="token" name="token" class="login_info" placeholder="token" required><br>
+        </form>
+        <button class="login_button" onclick="onLoginClick()">登录</button>
+    </div>
+    <script>
+        function onLoginClick() {
+            let form = document.getElementById("login_form");
+            document.cookie = "host=" + form.url.value;
+            document.cookie = "token=" + form.token.value;
+            // 跳转到指定的 URL 地址
+            window.location.href = "/index.html";
+        }
+    </script>
 </body>
+
 </html>

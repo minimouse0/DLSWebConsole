@@ -11,8 +11,21 @@
     </style>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
-const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
-const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+function parseCookie() {
+	cookie_data = {}
+	let ca = document.cookie.split(';');
+	for (let i = 0; i < ca.length; i++) {
+		let item = ca[i].trim().split("=");
+		if (item.length > 1) {
+			cookie_data[item[0]] = item[1];
+		}
+	}
+	return cookie_data;
+}
+cookie_data = parseCookie();
+const host = cookie_data["host"];
+const token = cookie_data["token"];
+
 function scrollToBottom(){}
 function defscroller(){
 //文心一言生成的自动滚动到最底部的函数，不一定完全能用
