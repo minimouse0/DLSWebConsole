@@ -97,7 +97,22 @@ function executeBak(){
 function executeRestart(){
     execute("restart");
 }
-
+function show_settings_form(){
+	settings_form.style.visibility="visible"
+	settings_form_container.style.visibility="visible"
+}
+function hide_settings_form(){
+	settings_form.style.visibility="hidden"
+	settings_form_container.style.visibility="hidden"
+}
+function logout(){
+	console.log("logout")
+ 	//清除cookie中的地址和地址和token
+	document.cookie="host=";
+	document.cookie="token=";
+	//跳转至登录页面
+    location.href =window.location.href.replace("index.html","login.html");
+}
 function get_server_load(callback){
     var settings = {
         "url": host+"/server_status",

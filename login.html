@@ -11,6 +11,7 @@ function onLoginClick(){
     document.cookie="host="+form.url.value;
     document.cookie="token="+form.token.value;
     // 跳转到指定的 URL 地址
+    //如果URL其他位置含有login，或访问没有带.html就会跳转时发生错误或无法跳转
     location.href =window.location.href.replace("login.html","index.html");
 }
 </script>

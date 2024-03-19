@@ -7,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="dasher.css">
 <link rel="stylesheet" type="text/css" href="console.css">
 <link rel="stylesheet" type="text/css" href="shortcuts.css">
+<link rel="stylesheet" type="text/css" href="settings.css">
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="lib/cookie.js"></script>
 <script src="panel.js"></script>
@@ -14,7 +15,6 @@
 //网页加载完毕才加载的部分
 $(function(){
 //清空网页加载时莫名其妙出现的一堆tab
-console.log("114514");
 document.getElementById('command').value="";
 //检测return/enter键
 $(document).on('keypress',function(e) {
@@ -37,7 +37,17 @@ get_server_status((status)=>{
 </script>
 </head>
 <body>
+
+	<div class="settings_form" id="settings_form">
+		<div class="settings_form_container" id="settings_form_container">
+			<button class="round_button" id="close_settings_form" onclick="hide_settings_form()">
+			</button><br>
+			<button class="round_button" id="logout" onclick="logout()">
+			</button><br>			
+		</div>
+	</div>
 	<div class="panel">
+		
 		<div class="console_controller">
 			<form class="executer">
 				<textarea id="command" placeholder="输入控制台命令" class="command">
@@ -49,6 +59,7 @@ get_server_status((status)=>{
 			</form>
 			<iframe src="serverconsole.html" class="console_output" frameborder="0"></iframe>
 		</div>
+		
 		<div class="panel_right">
 			<div class="dasher">
 				<div class="charts">
@@ -93,8 +104,8 @@ get_server_status((status)=>{
 		<button class="round_button" id="backup">
 			<img src="maps/backup.png" class="round_button_image" onclick="executeBak()">
 		</button><br>
-		<button class="round_button" id="preferences">
-			<img src="maps/preferences.png" class="round_button_image">
+		<button class="round_button" id="settings">
+			<img src="maps/settings.png" class="round_button_image" onclick="show_settings_form()">
 		</button><br>
 		</button><br>
 	</div>
