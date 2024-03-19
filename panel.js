@@ -111,7 +111,7 @@ function logout(){
 	document.cookie="host=";
 	document.cookie="token=";
 	//跳转至登录页面
-    location.href =window.location.href.replace("index.html","login.html");
+    indextologin()
 }
 function get_server_load(callback){
     var settings = {

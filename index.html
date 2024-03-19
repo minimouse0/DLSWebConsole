@@ -14,6 +14,10 @@
 <script>
 //网页加载完毕才加载的部分
 $(function(){
+//如果本地没有存储服务器登录数据则跳转至login.html要求用户登录
+if(!(parseCookie("host").length&&parseCookie("token"))){
+    indextologin()
+}
 //清空网页加载时莫名其妙出现的一堆tab
 document.getElementById('command').value="";
 //检测return/enter键
