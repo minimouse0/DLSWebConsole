@@ -113,6 +113,9 @@ function merge_log(logs,new_logs){
     return logs.concat(new_logs);
 }
 
+/**
+ * 将dls发出的带颜色的输出转换为html格式
+ */
 function color_html_convert(log){
         let color_text_html=""
         //把所有的\u001b字符转换以便后面操作的时候一些函数能识别
@@ -151,12 +154,14 @@ function color_html_convert(log){
                 //1个字符这种情况我也不知道是什么意思，就先映射了
                 case 1:{
                     switch(color_code_nums[0]){
+                        case "1":
                         case "31":
                         case "91":html_color="red";break;
                         case "33":
                         case "93":html_color="yellow";break;
                         case "21":html_color="blue";break;
                         case "4":
+                        case "37":
                         case "0":html_color="white";break;
                         //默认情况在控制台输出颜色代码，方便后续更新的时候通过用户反馈找规律
                         default:
@@ -177,7 +182,7 @@ function color_html_convert(log){
         //将所有颜色片段整合为一行
         let line=""
         for(let color_slice of color_slices_html){
-            line=line+`<span style=color:${color_slice.color}>`+color_slice.text+"<span>"
+            line=line+`<span style=color:${color_slice.color}>`+color_slice.text+"</span>"
         }
         return line;
 }
@@ -188,6 +193,7 @@ function parse_log(logs){
     for(log of logs){
         
         //拼接当前行
+        //使用转换函数将带颜色的输出转换后再显示
         log_raw_text=log_raw_text+color_html_convert(log);
         //在最后加上一个换行符
         log_raw_text=log_raw_text+"<br>";
