@@ -10,11 +10,53 @@
             word-wrap: break-word;
         }
     </style>
+<link rel="stylesheet" type="text/css" href="console.css">
+<link rel="stylesheet" type="text/css" href="basicWidgets.css">
 <script src="lib/cookie.js"></script>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="serverconsole.js"></script>
+<script src="panel.js"></script>
+<script src="lib/cookie.js"></script>
+<script>
+
+    
+//网页加载完毕才加载的部分
+$(function(){
+//清空网页加载时莫名其妙出现的一堆tab
+document.getElementById('command').value="";
+//检测return/enter键
+$(document).on('keypress',function(e) {
+	//后面要检测ctrl+enter换行
+    if(e.which == 13) {
+		executeCustomCmd(document.getElementById('command'))
+        //清空所有指令输入框中的内容
+		setTimeout(()=>{
+
+			document.getElementById('command').value="";
+		},30)
+		
+    }
+});
+//更新顶部那排开关的状态
+let switch_button=document.getElementById("switch_auto_scroll");
+    switch_button.style["background-color"]=getConfObj("auto_scroll")?"green":"#bbb";
+})
+</script>
 </head>
 <body bgcolor="303030">
+    <form class="executer">
+        <textarea id="command" placeholder="输入控制台命令" class="command">
+            
+        </textarea>
+        <botton class="send_button" id="send" onclick="executeCustomCmd(document.getElementById('command'))">
+            <img src="maps/send.png" class="send_button_image">
+        </botton>
+    </form>
+    <div class="console_toolbox">
+        <botton class="round_button" id="switch_auto_scroll" onclick="switch_auto_scroll()">
+            <img src="maps/send.png" class="send_button_image">
+        </botton>
+    </div>
     <div class="console_text">
         <p id="console_log"></p>
     </div>

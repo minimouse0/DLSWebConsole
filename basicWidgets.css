@@ -12,6 +12,7 @@
     border-radius: 50%;
     box-shadow: 0px 0px 10px #ccc;
     background-color: #ccc;
+    transition: 0.6s;
 }
 .round_button_image{
     margin-right:1px;

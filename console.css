@@ -1,6 +1,4 @@
-body{
-    display:flex;
-}
+
 .panel{
     display:flex;
     margin-left:15px;
@@ -18,29 +16,36 @@ body{
 }
 .console_output{
     position:relative;
-    top:-50px;
     height:100%;
     width:100%;
     border-radius:15px;
     z-index:1;
 }
 .executer{
+
     display:flex;
-    position: relative;
-    width:calc(100% - 25px);
-    left:12px;
+    position:fixed;
+    width:calc(100% - 15px);
+    left:15px;
     top:calc(100% - 65px);
     height:50px;
-    z-index:2;
+}
+.console_toolbox{
+    display:flex;
+    position: fixed;
+    width:calc(100% - 15px);
+    left:15px;
+    top:15px;
+    height:50px;
 }
 .command{
     padding:10px 15px;
-    height:calc(100% - 20px);
+    height:calc(100% - 28px);
     width:calc(100% - 100px);
-    border-radius:25px;
+    border-radius:23px;
     box-shadow: 0px 0px 10px #ccc;
     font-family:'Courier New', Courier, monospace;
-    font-size:25px;
+    font-size:19px;
 }
 .command_input{
     border:0cm;

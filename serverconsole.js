@@ -1,11 +1,13 @@
-const host=parseCookie("host")
-const token=parseCookie("token")
 
 const console_color_table={
     "0":"white"
 }
-
-function scrollToBottom(){}
+/**把控制台输出内容滚动到底部 */
+function scrollToBottom(){
+    var height = document.body.scrollHeight;
+    window.scroll({ top: height , left: 0})  
+}
+/*
 function defscroller(){
     //文心一言生成的自动滚动到最底部的函数，不一定完全能用
     // 获取当前文档对象
@@ -38,6 +40,7 @@ let wait_scroller=setInterval(()=>{
         clearInterval(wait_scroller);
     }
 },100);
+*/
 
 let current_log_id=0;
 /** 在浏览器中存储的完整log列表 */
@@ -64,8 +67,8 @@ function refresh_console(){
             last_new_log=new Date();
             current_log_id=response.log_list[response.log_list.length-1].log_id;
             //有新输出，刷新完成后自动滚动到控制台底部
-            var height = document.body.scrollHeight;
-            window.scroll({ top: height , left: 0})
+            if(getConfObj("auto_scroll"))scrollToBottom();
+
         }
     });
 }
@@ -211,3 +214,16 @@ setInterval(()=>{
         },200)
     }
 },1000);
+
+function update_console_toolbox(){
+    update_auto_scroll_switch();
+}
+
+function switch_auto_scroll(){
+    setConfObj("auto_scroll",!getConfObj("auto_scroll"))
+    update_auto_scroll_switch();
+}
+function update_auto_scroll_switch(){
+    let switch_button=document.getElementById("switch_auto_scroll");
+    switch_button.style["background-color"]=getConfObj("auto_scroll")?"green":"#bbb";
+}

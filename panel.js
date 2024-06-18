@@ -3,7 +3,6 @@ const token=parseCookie("token")
 //const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
 //const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
 
-
 /**
  * 向控制台发送指令
  * @param {string} cmd 指令
@@ -28,20 +27,25 @@ function execute(cmd,callback){
 	$.ajax(settings).done(function (response) {
 		//这里做成如果发送成功就调用css让执行键闪一下绿灯
 		if(response.msg=="提交命令成功!"){
-			let execute_button=document.getElementById('send');
-			//设置按钮颜色和渐变时长实现快速亮起
-			execute_button.style["transition"]="0.2s"
-			execute_button.style["background-color"]="#77fc5ccf"
-			//设置按钮颜色和渐变时长实现缓慢熄灭
-			setTimeout(()=>{
-				execute_button.style["transition"]="0.5s"
-				execute_button.style["background-color"]="#ccc";
-				//动画播放完了再给设置回去，时长同上面缓慢熄灭的时长
-				//setTimeout(()=>execute_button.style["transition"]="0.2s",120)
-			},200);
+			execute_button_flash();
 
 		}
 	});
+}
+
+function execute_button_flash(){
+	let execute_button=document.getElementById('send');
+	if(execute_button==undefined)return;
+	//设置按钮颜色和渐变时长实现快速亮起
+	execute_button.style["transition"]="0.2s"
+	execute_button.style["background-color"]="#77fc5ccf"
+	//设置按钮颜色和渐变时长实现缓慢熄灭
+	setTimeout(()=>{
+		execute_button.style["transition"]="0.5s"
+		execute_button.style["background-color"]="#ccc";
+		//动画播放完了再给设置回去，时长同上面缓慢熄灭的时长
+		//setTimeout(()=>execute_button.style["transition"]="0.2s",120)
+	},200);
 }
 
 //由用户输入指令并点击执行按钮
