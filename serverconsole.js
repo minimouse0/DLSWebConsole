@@ -43,6 +43,8 @@ let current_log_id=0;
 /** 在浏览器中存储的完整log列表 */
 let logs=[];
 let last_new_log=new Date();
+/**用于存储上一行的颜色代码，用于下一行的开头 */
+let last_line_color_code="0";
 function refresh_console(){
     let settings = {
         "url": host+"/terminal_log?token="+token+"&log_id="+current_log_id.toString(),
@@ -99,14 +101,15 @@ function merge_log(logs,new_logs){
     return logs.concat(new_logs);
 }
 
+
 /**
- * 将dls发出的带颜色的输出转换为html格式
+ * 将dls发出的带颜色的一整行输出转换为html格式
  */
 function color_html_convert(log){
         let color_text_html=""
         //把所有的\u001b字符转换以便后面操作的时候一些函数能识别
-        //前面和末尾添加一个白色的颜色代码方便后面一次性分割
-        let color_text="\u001b[0m"+log.color_text+"\u001b[0m";
+        //前面添加上一行的颜色代码来继承上一行颜色，末尾添加一个白色的颜色代码方便后面一次性分割
+        let color_text=`\u001b[${last_line_color_code}m`+log.color_text//+"\u001b[0m";
         //第一步：把所有颜色代码分片
         let color_slices=color_text.split(/\u001b\[/)
         //第二步：提取所有颜色代码后面的内容
@@ -162,14 +165,21 @@ function color_html_convert(log){
             //这个列表只代表当前这一行，这一整个列表用于给后面拼接成html用
             color_slices_html=color_slices_html.concat({
                 color:html_color,
+                color_code,
                 text
             });
         }
         //将所有颜色片段整合为一行
-        let line=""
+        let line="";
+        /**用于储存本行最后一个颜色代码*/
+        let line_last_color_code="0";
         for(let color_slice of color_slices_html){
             line=line+`<span style=color:${color_slice.color}>`+color_slice.text+"</span>"
+            //如果每执行一次for都覆盖一下这个变量的值，那当for执行完的时候这个变量的值就是最后次执行for时写入的值
+            line_last_color_code=color_slice.color_code;
         }
+        //此处已经执行到本行最后，所以直接把最后一个代码写入，作为下一行开头使用的颜色代码
+        last_line_color_code=line_last_color_code;
         return line;
 }
 
