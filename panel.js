@@ -10,7 +10,7 @@ const token=parseCookie("token")
  * @param callback 收到发送结果后执行的回调函数
  */
 function execute(cmd,callback){
-	var settings = {
+	let settings = {
 		"url": host+"/execute",
 		"method": "POST",
 		"timeout": 0,
@@ -27,15 +27,20 @@ function execute(cmd,callback){
 
 	$.ajax(settings).done(function (response) {
 		//这里做成如果发送成功就调用css让执行键闪一下绿灯
-		//console.log(response);
-
-        /*
 		if(response.msg=="提交命令成功!"){
-			let execute_button=document.getElementById('execute');
+			let execute_button=document.getElementById('send');
+			//设置按钮颜色和渐变时长实现快速亮起
+			execute_button.style["transition"]="0.2s"
 			execute_button.style["background-color"]="#77fc5ccf"
-			setTimeout(()=>execute_button.style["background-color"]="#bbb",150);
+			//设置按钮颜色和渐变时长实现缓慢熄灭
+			setTimeout(()=>{
+				execute_button.style["transition"]="0.5s"
+				execute_button.style["background-color"]="#ccc";
+				//动画播放完了再给设置回去，时长同上面缓慢熄灭的时长
+				//setTimeout(()=>execute_button.style["transition"]="0.2s",120)
+			},200);
+
 		}
-        */
 	});
 }
 
