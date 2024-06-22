@@ -1,4 +1,4 @@
-
+"use strict";
 const console_color_table={
     "0":"white"
 }
@@ -90,9 +90,15 @@ function merge_log(logs,new_logs){
     if(!new_logs.length){//如果新日志长度是空的，证明没有任何东西要拼接，直接返回旧日志
         return logs;
     }
-    if(!logs.length){//如果旧日志长度是空的，证明新日志是第一段被拼接进来的日志
+    if(!logs.length){//如果旧日志长度是空的，证明新日志是第一段被拼接进来的日志，那么整个日志内容肯定就是新日志内容
         return new_logs;
     }
+    //如果新日志的最后logid还没有旧日志大，证明返回来的所有内容都不需要拼接，那么直接返回旧日志
+    if(new_logs[new_logs.length-1].log_id<=logs[logs.length-1].log_id){
+        return logs;
+    }
+    /*
+    //旧日志最后的id减新日志的最后的id就是重合的长度
     let coincide_length=logs[logs.length-1].log_id-new_logs[new_logs.length-1].log_id+1;
     if(coincide_length>=0){
         return logs.concat(new_logs);
@@ -100,6 +106,14 @@ function merge_log(logs,new_logs){
     if(coincide_length>=new_logs.length){
         return logs;
     }
+    new_logs.splice(0,coincide_length);
+    return logs.concat(new_logs);*/
+    //如果新日志的头部id大于旧日志的尾部id，证明两者没有重合部分，直接拼接
+    if(new_logs[0].log_id>logs[logs.length-1].log_id)return logs.concat(new_logs);
+    //如果新日志的善id不是大于（小于等于）旧日志的尾部id，证明两者有重合部分
+    //旧日志的尾部id减新日志的头部id再加一就是重合的长度
+    let coincide_length=logs[logs.length-1].log_id-new_logs[0].log_id+1;
+    //将新日志从头删除重合长度的行数
     new_logs.splice(0,coincide_length);
     return logs.concat(new_logs);
 }
@@ -189,7 +203,7 @@ function color_html_convert(log){
 //简单粗爆地把所有输出信息合到一起，后面打算弃用，因为太💩了
 function parse_log(logs){
     let log_raw_text="";
-    for(log of logs){
+    for(let log of logs){
         
         //拼接当前行
         //使用转换函数将带颜色的输出转换后再显示
