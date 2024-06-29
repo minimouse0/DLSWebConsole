@@ -2,12 +2,24 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<style>
+html,body{
+    height:95%;
+}
+</style>
 <!--引入d3.js-->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.7.0/d3.min.js"></script>-->
 <script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.staticfile.net/Chart.js/3.9.1/chart.js"></script>
+<script>
+    //const myChart = new Chart(ctx, {...});
+</script>
+<script src="lib/cookie.js"></script>
+<script src="panel.js"></script>
+<script src="cpuchart.js"></script>
+
 </head>
 <body>
-<svg id="chart" width="110%" height="110%"></svg>
-<script src="cpuchart.js"></script>
+<canvas id="mainChart" width="100%"></canvas>
 </body>
 </html>

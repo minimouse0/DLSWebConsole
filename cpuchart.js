@@ -1,5 +1,97 @@
-// 创建SVG容器
-var svg = d3.select("#chart");
+"use strict";
+//getHardwareStatus()
+const cpuStatusHistory=[]
+let mainChart=null;
+function updateCPUStatus(status){
+    //更新CPU数据
+    cpuStatusHistory.push({
+        time:new Date(),
+        status
+    });
+    //更新图表
+    //if(cpuStatusHistory.length<2)return;
+    //创建前段的空数据
+    const dataVoid=(()=>{
+        let dataVoidTemp=[];
+        for(let i=1;i<=30;i++){
+            dataVoidTemp.push({
+                time:new Date(i),
+                status:0
+            })
+        }
+        return dataVoidTemp;
+    })();
+    //将前段的空数据拼接进原始数据
+    //创建当前CPU记录的副本以便此次处理制作表格
+    const duplicatedCpuSatusHistory=dataVoid.concat(cpuStatusHistory);
+    //截取最后n段作为输入进表格的数据
+    duplicatedCpuSatusHistory.splice(0,duplicatedCpuSatusHistory.length-30);
+    const labels=[];const cpuStatus=[];
+    //解析数据，分成x轴的数据（lablels）和y轴的数据（cpuStatus）
+    for(let CPUStatus of duplicatedCpuSatusHistory){
+        //labels.push(CPUStatus.time.getTime());
+        labels.push('-');
+        cpuStatus.push(CPUStatus.status);
+    }
+    const mainChartElement=document.getElementById("mainChart");
+    const data={
+        labels,
+        datasets:[{
+            data:cpuStatus,
+            fill:true,
+            tension:0.5
+        }]
+    }
+    const options={
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            display:false,
+            max:100,
+            /*stacked: true,
+            grid: {
+              display: false,
+              color: "rgba(255,99,132,0.2)"
+            },*/
+          },
+          x: {
+            display:false,
+            /*grid: {
+              display: false
+            }*/
+          }
+        },
+        animation:false,
+        elements:{
+            point:{
+                pointRadius:0
+            }
+        },
+        datasets:{
+            line:{
+                fill:true
+            }
+        },
+        plugins:{
+            legend:{
+                display:false
+            }
+        }
+    };
+    const config={
+        type:"line",
+        options,
+        data
+    }
+    //清除原图表
+    if(mainChart)mainChart.destroy();
+    //生成新图表
+    mainChart=new Chart(mainChartElement,config);
+    //mainChart.canvas.parentNode.style.height=window.innerHeight
+}
+
+
+
 
 // 数据集合
 /*
@@ -30,7 +122,14 @@ var lineFunction = d3.line()
 svg.append("path")
    .attr("class", "line")
    .datum(data)
-   .attr("d", lineFunction);*/
+   .attr("d", lineFunction);
+
+//校准svg
+let svgElement=document.getElementById("chart");
+
+
+// 创建SVG容器
+var svg = d3.select("#chart");
 const lineGenerator1=d3.line();
 const points1=[
     [0,50],[100,window.innerHeight],[window.innerWidth,100]
@@ -41,17 +140,4 @@ svg.append("path")
     .attr("fill","none")
     .attr("stroke-width",5)
     .attr("stroke","lightblue");
-setTimeout(()=>{
-d3.select("#chart").selectAll("*").remove();
-const lineGenerator2=d3.line();
-console.log(innerWidth)
-const points2=[
-    [0,50],[100,50],[window.innerWidth,100]
-];
-const linePath2=lineGenerator2(points2);
-svg.append("path")
-    .attr("d",linePath2)
-    .attr("fill","none")
-    .attr("stroke-width",5)
-    .attr("stroke","lightblue");            
-},2000)
+//d3.select("#chart").selectAll("*").remove();*/

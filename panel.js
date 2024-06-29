@@ -121,11 +121,14 @@ function logout(){
 	//跳转至登录页面
     indextologin()
 }
-function get_server_load(callback){
+function getHardwareStatus(callback){
     var settings = {
         "url": host+"/server_status",
         "method": "GET",
         "timeout": 0,
+		"headers": {
+			"User-Agent": "Apifox/1.0.0 (https://apifox.com)"
+		 },
     };
 
     $.ajax(settings).done(function (response) {
@@ -133,4 +136,4 @@ function get_server_load(callback){
     });
 }
 let load_request_interval=1000;
-get_server_load((response)=>{});
+//getHardwareStatus((response)=>{});
