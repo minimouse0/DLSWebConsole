@@ -1,5 +1,6 @@
 "use strict";
 //getHardwareStatus()
+/**这个数据会越来越大，将来必须优化 */
 const cpuStatusHistory=[]
 let mainChart=null;
 function updateCPUStatus(status){

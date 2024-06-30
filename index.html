@@ -34,6 +34,8 @@ var hardwareStatus={}
 setInterval(()=>{
 getHardwareStatus((response)=>{
 	document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
+	updateMemStatus(response.mem_used,response.mem_total);
+	updateDiskStatus(response.disks_info)
 })
 },1100)
 
@@ -70,10 +72,22 @@ initConf()
 					</div>
 				</div>
 				<div class="disk">
-					<div class="mem_bottom"></div>
+					<div class="used_mem_area">
+						<div class="mem_bottom"></div>
+						<div class="mem_column" id="mem_column"></div>
+					</div>
+					<button class="disk_switch_button" id="mem_button"> </button>
 				</div>
-				<button class="disk">
-				</button>
+				<div class="disk">
+					<!--<div class="disk_selector">
+
+					</div>-->
+					<div class="used_mem_area">
+						<div class="mem_bottom"></div>
+						<div class="mem_column" id="disk_column"></div>
+					</div>
+					<button class="disk_switch_button" id="disk_switch_button" onclick="switchDiskSymbol()"></button>
+				</div>
 			</div>
 			<div class="shortcuts">
 				<div class="param_shortcuts">

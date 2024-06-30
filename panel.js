@@ -114,7 +114,6 @@ function hide_settings_form(){
 	settings_form_container.style.visibility="hidden"
 }
 function logout(){
-	console.log("logout")
  	//清除cookie中的地址和地址和token
 	document.cookie="host=";
 	document.cookie="token=";
@@ -134,6 +133,48 @@ function getHardwareStatus(callback){
     $.ajax(settings).done(function (response) {
         callback(response);
     });
+}
+function updateMemStatus(memUsed,memTotal){
+	document.getElementById("mem_column").style.width="calc(calc(100% - 50px) * "+(memUsed/memTotal).toString()+")"
+	document.getElementById("mem_button").innerHTML=memUsed+"MB/"+memTotal+"MB"
+}
+let cachedDiskList=[]
+function updateDiskStatus(diskList){
+	cachedDiskList=diskList;
+	const selectedDisk=(()=>{
+		//初始化当前服务器的盘符
+		if(!getConfObj("disk_info_selected_symbol")[host]){
+			let diskConf=getConfObj("disk_info_selected_symbol")
+			diskConf[host]=diskList[0].symbol;
+			setConfObj("disk_info_selected_symbol",diskConf);
+		}
+		//返回当前选择的盘符
+		return getConfObj("disk_info_selected_symbol")[host]
+		//return "C:"
+	})()
+	document.getElementById("disk_column").style.width="calc(calc(100% - 50px) * "+(()=>{
+		for(let disk of diskList){
+			if(disk.symbol===selectedDisk){
+				//改变文字显示
+				document.getElementById("disk_switch_button").innerHTML=disk.symbol+"   "+disk.disk_used+"GB/"+disk.disk_total+"GB";
+				//改变图表状态
+				return disk.disk_used/disk.disk_total;;
+			}
+		}
+		return 0;
+	})().toString()+")"
+}
+function switchDiskSymbol(){
+	for(let i in cachedDiskList){
+		if(cachedDiskList[i].symbol==getConfObj("disk_info_selected_symbol")[host]){
+
+			let diskConf=getConfObj("disk_info_selected_symbol")
+			diskConf[host]=cachedDiskList[(Number(i)+1)%cachedDiskList.length].symbol;
+			setConfObj("disk_info_selected_symbol",diskConf)
+			break;
+		}
+	}
+	updateDiskStatus(cachedDiskList);
 }
 let load_request_interval=1000;
 //getHardwareStatus((response)=>{});
