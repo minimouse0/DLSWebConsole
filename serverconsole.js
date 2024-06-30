@@ -239,5 +239,5 @@ function switch_auto_scroll(){
 }
 function update_auto_scroll_switch(){
     let switch_button=document.getElementById("switch_auto_scroll");
-    switch_button.style["background-color"]=getConfObj("auto_scroll")?"green":"#bbb";
+    switch_button.style["background-color"]=getConfObj("auto_scroll")?"#36f":"#b0c9f7";
 }

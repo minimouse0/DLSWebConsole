@@ -38,11 +38,11 @@ function execute_button_flash(){
 	if(execute_button==undefined)return;
 	//设置按钮颜色和渐变时长实现快速亮起
 	execute_button.style["transition"]="0.2s"
-	execute_button.style["background-color"]="#77fc5ccf"
+	execute_button.style["background-color"]="#36f"
 	//设置按钮颜色和渐变时长实现缓慢熄灭
 	setTimeout(()=>{
 		execute_button.style["transition"]="0.5s"
-		execute_button.style["background-color"]="#ccc";
+		execute_button.style["background-color"]="#b0c9f7";
 		//动画播放完了再给设置回去，时长同上面缓慢熄灭的时长
 		//setTimeout(()=>execute_button.style["transition"]="0.2s",120)
 	},200);
@@ -93,8 +93,8 @@ function switch_button_wait_status_change(switch_button,old_status){
 }
 function switch_button_color(switch_button,status){
 	switch(status){
-		case 0:switch_button.style["background-color"]="#bbb";break;
-		case 1:switch_button.style["background-color"]="green";break;
+		case 0:switch_button.style["background-color"]="#b0c9f7";break;
+		case 1:switch_button.style["background-color"]="#36f";break;
 	}
 	
 }
