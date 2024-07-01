@@ -106,13 +106,71 @@ function executeRestart(){
     execute("restart");
 }
 function show_settings_form(){
-	settings_form.style.visibility="visible"
-	settings_form_container.style.visibility="visible"
+	//https://blog.csdn.net/qq_35727582/article/details/114868023
+	document.getElementById("settings_form").style.display="block"
 }
 function hide_settings_form(){
-	settings_form.style.visibility="hidden"
-	settings_form_container.style.visibility="hidden"
+	document.getElementById("settings_form").style.display="none"
 }
+////////////
+function initSimpleShortcutConf(number){
+	//先初始化当前按钮的配置
+	const conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list"])
+	conf.init(number,{});
+	//初始化各项配置
+	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
+	shortcut_conf.init("cmd","")
+}
+function show_simple_shortcut_custom_form(number){
+	//初始化各项配置
+	initSimpleShortcutConf(number)
+	//先把输入框里的内容改成保存的内容
+	document.getElementById("set_simple_shortcut_form_textarea").value=getSimpleShortcutCmd(number)
+	document.getElementById("set_simple_shortcut_form_overlay").style.display="block"
+	document.getElementById("set_simple_shortcut_form_edited_button_number").innerHTML=number
+}
+function hide_simple_shortcut_custom_form(){
+	document.getElementById("set_simple_shortcut_form_overlay").style.display="none"
+}
+function save_simple_shortcut_custom_form(){
+	const number=Number(document.getElementById("set_simple_shortcut_form_edited_button_number").innerHTML)
+	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
+	shortcut_conf.set("cmd",document.getElementById("set_simple_shortcut_form_textarea").value)
+	//init_simple_shortcut_cmd_list(host,number)
+	hide_simple_shortcut_custom_form()
+}
+function getSimpleShortcutCmd(number){
+	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
+	return shortcut_conf.get("cmd");
+}
+function executeSimpleShortcut(number){
+	initSimpleShortcutConf(number)
+	execute(getSimpleShortcutCmd(number))
+}
+/*
+////////////////
+function init_simple_shortcut_cmd_list(host,number){
+	//这里不用初始化，get已经初始化完了
+	let conf=getServerConfObj(host,"simple_shortcut_cmd_list")
+	if(conf[number]===undefined||!(conf[number] instanceof Object))conf[number]={};
+	setServerConfObj(host,"simple_shortcut_cmd_list",conf);
+}
+function get_simple_shortcut_cmd_list(host,number){
+	return getServerConfObj(host,"simple_shortcut_cmd_list")[number]
+}
+function set_simple_shortcut_cmd_list(host,number,value){
+	let conf=getServerConfObj(host,"simple_shortcut_cmd_list")
+	conf[number]=value;
+	setServerConfObj(host,"simple_shortcut_cmd_list",conf)
+}
+
+function init_simple_shortcut_cmd_list_conf_obj(host,number,key,value){
+	let conf=get_simple_shortcut_cmd_list(host,number);
+	if(conf[key]===undefined||conf[key].constructor!=)conf[key]=value;
+	setServerConfObj(host,"simple_shortcut_cmd_list",conf);
+}
+*/
+
 function logout(){
  	//清除cookie中的地址和地址和token
 	document.cookie="host=";

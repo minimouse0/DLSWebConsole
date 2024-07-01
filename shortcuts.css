@@ -7,13 +7,40 @@
     height:50px;
     width:100%;
 }
-.param_shortcut1{
+.param_shortcut_input_container{
     height:100%;
-    width:calc(calc(100% - 15px) / 2);
+    width:50px;
+    background-color: #36f;
+}
+.param_shortcut_input{
+    margin-top:5px;
+    margin-left:5px;
+    margin-right:5px;
+    width:200px;
+    height:35px;
+    border-bottom: 1px solid #000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    outline:none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:24px;
+    background:transparent;
+    resize:none;
+}
+.param_shortcut1{
+    display:flex;
+    height:100%;
+    /*width:calc(calc(100% - 15px) / 2);*/
+    width:100%;
     background-color: white;
     border-radius:50px;
     box-shadow: 0px 0px 10px #ccc;
-    z-index:0;
+    /*z-index:0;*/
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:30px;
+    justify-content:center;
+    align-items: center;
 }
 .param_shortcut2{
     margin-left:15px;
@@ -31,12 +58,17 @@
 }
 .simple_shortcut1{
     height:100%;
-    width:calc(calc(100% - 45px) / 4);
+    width:calc(calc(100% - 30px) / 3);
     border-radius:50px;
     box-shadow: 0px 0px 10px #ccc;
     border: 1px solid #bcbcbc;
     background-color: #36f;
 }
+.simple_shortcut_pad{
+    height:100%;
+    width:15px;
+}
+/*
 .simple_shortcut2{
     margin-left:15px;
     height:100%;
@@ -54,7 +86,7 @@
     box-shadow: 0px 0px 10px #ccc;
     border: 1px solid #bcbcbc;
     background-color: #36f;
-}
+}*/
 .simple_shortcut_menu{
     margin-left:15px;
     height:100%;

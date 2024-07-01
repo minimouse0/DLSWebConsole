@@ -1,8 +1,23 @@
+.settings_form {
 
-.settings_form .settings_form_container{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    /* IE9以下不支持rgba模式 */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 兼容IE8及以下 */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7f000000,endColorstr=#7f000000);
+    display: none;
+    z-index:5;
+}
+.settings_form_container{
+    display: flex;
+    background-color: #f8f8f8;
     width: 600px;
     height: 400px;
-    background-color: #f8f8f8;
     position: absolute;
     left: 0;
     right: 0;
@@ -14,6 +29,81 @@
     border-radius:15px;
     box-shadow: 0px 0px 10px #ccc;
     padding: 1em;    
-	z-index:3;
-    visibility: hidden;
+}
+.set_simple_shortcut_form_overlay{
+    position:fixed;
+    width:100%;
+    height:100%;
+    display:none;
+    z-index:6;
+}
+.set_simple_shortcut_form{
+    background-color: #f8f8f8;
+    width: 500px;
+    height: 145px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    box-sizing: border-box;
+    border: 1px solid #bcbcbc;
+    border-radius:15px;
+    box-shadow: 0px 0px 10px #ccc;
+    padding: 1em;   
+}
+.set_simple_shortcut_form_line{
+    display:flex;
+    margin-bottom: 5px;
+    width:100%;
+    height:50%;
+}
+.set_simple_shortcut_form_title{
+    justify-content:center;
+    align-items: center;
+    height:50px;
+    width:calc(100% - 50px);
+    margin-left:15px;
+    font-size:33px;
+    font-family:Arial, Helvetica, sans-serif
+}
+.set_simple_shortcut_form_textarea{
+    justify-content:center;
+    align-items: center;
+    height:40px;
+    width:calc(100% - 50px);
+    margin-left:15px;
+    font-size:28px;
+    font-family:Arial, Helvetica, sans-serif;
+    resize:none;
+    outline: none;
+    background:transparent;
+    border-bottom: 1px solid #000;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+.settings_form_table{
+    margin-left:15px;
+    width:100%;
+}
+.settings_form_line1{
+    display:flex;
+    height:50px;
+}
+.settings_form_line1_block{
+    width:15px;
+    height:100%;
+}
+.show_simple_shortcut_custom_form{
+    height:100%;
+    width:calc(calc(100% - 30px) / 3);
+    border-radius:50px;
+    box-shadow: 0px 0px 10px #ccc;
+    border: 1px solid #bcbcbc;
+    font-size:25px;
+    color:white;
+
+    background-color: #36f;
 }

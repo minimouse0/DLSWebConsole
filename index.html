@@ -15,6 +15,7 @@ body{
 <link rel="stylesheet" type="text/css" href="settings.css">
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="lib/cookie.js"></script>
+<script src="lib/JsonWeb.js"></script>
 <script src="panel.js"></script>
 <script>
 //网页加载完毕才加载的部分
@@ -39,9 +40,16 @@ getHardwareStatus((response)=>{
 })
 },1100)
 
+//document.cookie="config=;SameSite=Strict"
 //初始化用户配置
 initConf()
-
+const conf=new JsonWeb(getConf(),["server_conf"])
+//初始化当前服务器地址的配置文件
+//initServerConf(host);
+conf.init(host,{});
+//initServerConfObj(host,"simple_shortcut_cmd_list",{});
+const ServerConf=new JsonWeb(getConf(),["server_conf",host]);
+ServerConf.init("simple_shortcut_cmd_list",{})
 })
 </script>
 </head>
@@ -49,13 +57,43 @@ initConf()
 
 	<div class="settings_form" id="settings_form">
 		<div class="settings_form_container" id="settings_form_container">
-			<button class="round_button" id="close_settings_form" onclick="hide_settings_form()">
-				<img src="maps/close.png" class="round_button_image">
-			</button><br>
-			<button class="round_button" id="logout" onclick="logout()">
-				<img src="maps/logout.png" class="round_button_image">
-			</button><br>			
+			<div class="settings_form_left_buttons">
+				<button class="round_button" id="close_settings_form" onclick="hide_settings_form()">
+					<img src="maps/close.png" class="round_button_image">
+				</button><br>
+				<button class="round_button" id="logout" onclick="logout()">
+					<img src="maps/logout.png" class="round_button_image">
+				</button><br>	
+			</div>
+			<div class="settings_form_table">
+				<div class="settings_form_line1">
+					<button class="show_simple_shortcut_custom_form" onclick="show_simple_shortcut_custom_form(1)">快捷按钮1</button>
+					<div class="settings_form_line1_block"></div>
+					<button class="show_simple_shortcut_custom_form" onclick="show_simple_shortcut_custom_form(2)">快捷按钮2</button>
+					<div class="settings_form_line1_block"></div>
+					<button class="show_simple_shortcut_custom_form" onclick="show_simple_shortcut_custom_form(3)">快捷按钮3</button>
+				</div>
+			</div>
+
+
 		</div>
+	</div>
+	<div class="set_simple_shortcut_form_overlay" id="set_simple_shortcut_form_overlay">
+		<div class="set_simple_shortcut_form">
+			<div class="set_simple_shortcut_form_line">
+				<button class="round_button" onclick="hide_simple_shortcut_custom_form()">
+					<img src="maps/close.png" class="round_button_image">
+				</button>
+				<div class="set_simple_shortcut_form_title">编辑要执行的命令</div>
+			</div>
+			<div class="set_simple_shortcut_form_line">
+				<button class="round_button" onclick="save_simple_shortcut_custom_form()">
+					<img src="maps/yes.png" class="round_button_image">
+				</button>
+				<textarea class="set_simple_shortcut_form_textarea" id="set_simple_shortcut_form_textarea"></textarea>
+			</div>
+		</div>
+		<div id="set_simple_shortcut_form_edited_button_number" style="display:none">0</div>
 	</div>
 	<div class="panel">
 		
@@ -91,18 +129,26 @@ initConf()
 			</div>
 			<div class="shortcuts">
 				<div class="param_shortcuts">
-					<div class="param_shortcut1">
-
+					<div class="param_shortcut1" id="param_shortcut1">
+						<p>whitelist add </p>
+						<textarea class="param_shortcut_input"></textarea>
+						<!--<div class="param_shortcut_input_container">
+							
+						</div>-->
+						
 					</div>
-					<div class="param_shortcut2">
-
-					</div>
+					<!--
+					<div class="simple_shortcut_pad"></div>
+					<form class="param_shortcut1">
+						whitelist...<input type="text">...
+					</form>-->
 				</div>
 				<div class="simple_shortcuts">
-					<button class="simple_shortcut1"></button>
-					<button class="simple_shortcut2"></button>
-					<button class="simple_shortcut3"></button>
-					<button class="simple_shortcut_menu"></button>					
+					<button class="simple_shortcut1" id="simple_shortcut1" onclick="executeSimpleShortcut(1)"></button>
+					<div class="simple_shortcut_pad" ></div>
+					<button class="simple_shortcut1" id="simple_shortcut2" onclick="executeSimpleShortcut(2)"></button>
+					<div class="simple_shortcut_pad"></div>
+					<button class="simple_shortcut1" id="simple_shortcut3" onclick="executeSimpleShortcut(3)"></button>			
 				</div>
 			</div>		
 		</div>		
@@ -121,7 +167,6 @@ initConf()
 		</button><br>
 		<button class="round_button" id="settings">
 			<img src="maps/settings.png" class="round_button_image" onclick="show_settings_form()">
-		</button><br>
 		</button><br>
 	</div>
 	<div class="option_container">
