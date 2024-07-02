@@ -108,6 +108,11 @@ function executeRestart(){
 function show_settings_form(){
 	//https://blog.csdn.net/qq_35727582/article/details/114868023
 	document.getElementById("settings_form").style.display="block"
+	for(let i=1;i<=3;i++){
+		//初始化各项配置
+		initSimpleShortcutConf(i)
+		setShortcutButtonTitle(i);
+	}
 }
 function hide_settings_form(){
 	document.getElementById("settings_form").style.display="none"
@@ -120,13 +125,15 @@ function initSimpleShortcutConf(number){
 	//初始化各项配置
 	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
 	shortcut_conf.init("cmd","")
+	shortcut_conf.init("title","快捷按钮"+number)
 }
 function show_simple_shortcut_custom_form(number){
-	//初始化各项配置
-	initSimpleShortcutConf(number)
 	//先把输入框里的内容改成保存的内容
 	document.getElementById("set_simple_shortcut_form_textarea").value=getSimpleShortcutCmd(number)
+	document.getElementById("set_simple_shortcut_form_title_textarea").value=getSimpleShortcutConf(number).title
+	//使窗口显示
 	document.getElementById("set_simple_shortcut_form_overlay").style.display="block"
+	//将隐藏的html段落设置为当前的序号供后面读取
 	document.getElementById("set_simple_shortcut_form_edited_button_number").innerHTML=number
 }
 function hide_simple_shortcut_custom_form(){
@@ -134,8 +141,12 @@ function hide_simple_shortcut_custom_form(){
 }
 function save_simple_shortcut_custom_form(){
 	const number=Number(document.getElementById("set_simple_shortcut_form_edited_button_number").innerHTML)
-	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
-	shortcut_conf.set("cmd",document.getElementById("set_simple_shortcut_form_textarea").value)
+	const shortcut_confs=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list"])
+	let shortcut_conf=shortcut_confs.get(number)
+	shortcut_conf.cmd=document.getElementById("set_simple_shortcut_form_textarea").value
+	shortcut_conf.title=document.getElementById("set_simple_shortcut_form_title_textarea").value
+	shortcut_confs.set(number,shortcut_conf);
+	setShortcutButtonTitle(number)
 	//init_simple_shortcut_cmd_list(host,number)
 	hide_simple_shortcut_custom_form()
 }
@@ -143,9 +154,19 @@ function getSimpleShortcutCmd(number){
 	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
 	return shortcut_conf.get("cmd");
 }
+function getSimpleShortcutConf(number){
+	const shortcut_confs=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list"])
+	return shortcut_confs.get(number);
+}
 function executeSimpleShortcut(number){
 	initSimpleShortcutConf(number)
 	execute(getSimpleShortcutCmd(number))
+}
+function setShortcutButtonTitle(number){
+	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
+	const title=shortcut_conf.get("title")
+	document.getElementById("simple_shortcut"+number).innerHTML=title;
+	document.getElementById("show_simple_shortcut_custom_form"+number).innerHTML=title;
 }
 /*
 ////////////////

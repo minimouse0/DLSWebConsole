@@ -40,6 +40,7 @@ getHardwareStatus((response)=>{
 })
 },1100)
 
+//去掉这行代码的注释可以直接从代码层面清除cookie
 //document.cookie="config=;SameSite=Strict"
 //初始化用户配置
 initConf()
@@ -50,6 +51,14 @@ conf.init(host,{});
 //initServerConfObj(host,"simple_shortcut_cmd_list",{});
 const ServerConf=new JsonWeb(getConf(),["server_conf",host]);
 ServerConf.init("simple_shortcut_cmd_list",{})
+
+//初始化快捷按钮的配置文件
+for(let i=1;i<=3;i++){
+	initSimpleShortcutConf(i);
+	setShortcutButtonTitle(i)
+}
+
+
 })
 </script>
 </head>
@@ -67,11 +76,11 @@ ServerConf.init("simple_shortcut_cmd_list",{})
 			</div>
 			<div class="settings_form_table">
 				<div class="settings_form_line1">
-					<button class="show_simple_shortcut_custom_form" onclick="show_simple_shortcut_custom_form(1)">快捷按钮1</button>
+					<button class="show_simple_shortcut_custom_form" id="show_simple_shortcut_custom_form1" onclick="show_simple_shortcut_custom_form(1)">快捷按钮1</button>
 					<div class="settings_form_line1_block"></div>
-					<button class="show_simple_shortcut_custom_form" onclick="show_simple_shortcut_custom_form(2)">快捷按钮2</button>
+					<button class="show_simple_shortcut_custom_form" id="show_simple_shortcut_custom_form2" onclick="show_simple_shortcut_custom_form(2)">快捷按钮2</button>
 					<div class="settings_form_line1_block"></div>
-					<button class="show_simple_shortcut_custom_form" onclick="show_simple_shortcut_custom_form(3)">快捷按钮3</button>
+					<button class="show_simple_shortcut_custom_form" id="show_simple_shortcut_custom_form3" onclick="show_simple_shortcut_custom_form(3)">快捷按钮3</button>
 				</div>
 			</div>
 
@@ -85,6 +94,10 @@ ServerConf.init("simple_shortcut_cmd_list",{})
 					<img src="maps/close.png" class="round_button_image">
 				</button>
 				<div class="set_simple_shortcut_form_title">编辑要执行的命令</div>
+			</div>
+			<div class="set_simple_shortcut_form_line">
+				<div class="round_button_block"></div>
+				<textarea class="set_simple_shortcut_form_textarea" id="set_simple_shortcut_form_title_textarea"></textarea>
 			</div>
 			<div class="set_simple_shortcut_form_line">
 				<button class="round_button" onclick="save_simple_shortcut_custom_form()">
