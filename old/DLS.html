@@ -59,10 +59,7 @@ function get_server_status(callback){
 	var settings = {
 		"url": host+"/process_status",
 		"method": "GET",
-		"timeout": 0,
-		"headers": {
-			"User-Agent": "Apifox/1.0.0 (https://apifox.com)"
-   		},
+		"timeout": 0
 	};
 	$.ajax(settings).done((response)=>{
 		callback(response.online);
@@ -116,7 +113,6 @@ function execute(cmd){
 		"method": "POST",
 		"timeout": 0,
 		"headers": {
-			"User-Agent": "Apifox/1.0.0 (https://apifox.com)",
 			"Content-Type": "application/json"
 		},
 		"data": JSON.stringify({

@@ -205,7 +205,6 @@ function getHardwareStatus(callback){
         "method": "GET",
         "timeout": 0,
 		"headers": {
-			"User-Agent": "Apifox/1.0.0 (https://apifox.com)"
 		 },
     };
 
