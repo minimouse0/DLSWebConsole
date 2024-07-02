@@ -34,6 +34,8 @@ get_server_status((status)=>{
 var hardwareStatus={}
 setInterval(()=>{
 getHardwareStatus((response)=>{
+	//如果发现函数undefined就证明部分内容加载失败，自动刷新页面来重试
+	if(!document.getElementById("cpuchart").contentWindow.updateCPUStatus)location.reload()
 	document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
 	updateMemStatus(response.mem_used,response.mem_total);
 	updateDiskStatus(response.disks_info)
