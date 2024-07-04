@@ -17,6 +17,7 @@ body{
 <script src="lib/cookie.js"></script>
 <script src="lib/JsonWeb.js"></script>
 <script src="panel.js"></script>
+<script src="developer.js"></script>
 <script>
 //网页加载完毕才加载的部分
 $(function(){
@@ -61,6 +62,14 @@ for(let i=1;i<=3;i++){
 }
 
 
+//检测键盘按键
+$(document).on('keypress',function(e) {
+    if(e.which == 13&&document.getElementById('param_shortcut_input1')==document.activeElement) {
+		execute("cmd whitelist add "+document.getElementById('param_shortcut_input1').value,()=>{})
+		setTimeout(()=>document.getElementById('param_shortcut_input1').value="",30)
+    }
+});
+
 })
 </script>
 </head>
@@ -72,9 +81,15 @@ for(let i=1;i<=3;i++){
 				<button class="round_button" id="close_settings_form" onclick="hide_settings_form()">
 					<img src="maps/close.png" class="round_button_image">
 				</button><br>
-				<button class="round_button" id="logout" onclick="logout()">
-					<img src="maps/logout.png" class="round_button_image">
-				</button><br>	
+				<div class="settings_form_left_buttons_buttom_buttons">
+					<button class="round_button" id="logout" onclick="logout()">
+						<img src="maps/logout.png" class="round_button_image">
+					</button><br>
+					<button class="round_button" id="show_developer_panel" onclick="show_developer_panel()">
+						<img src="maps/developer.png" class="round_button_image">
+					</button><br>
+
+				</div>	
 			</div>
 			<div class="settings_form_table">
 				<div class="settings_form_line1">
@@ -85,7 +100,6 @@ for(let i=1;i<=3;i++){
 					<button class="show_simple_shortcut_custom_form" id="show_simple_shortcut_custom_form3" onclick="show_simple_shortcut_custom_form(3)">快捷按钮3</button>
 				</div>
 			</div>
-
 
 		</div>
 	</div>
@@ -109,6 +123,10 @@ for(let i=1;i<=3;i++){
 			</div>
 		</div>
 		<div id="set_simple_shortcut_form_edited_button_number" style="display:none">0</div>
+	</div>
+	<div class="developer_panel" id="developer_panel">
+		<button id="close_developer_panel" onclick="close_developer_panel()">x</button>
+		<button id="manuallyCleanAllConf" onclick="manuallyCleanAllConf()">重置全部配置</button>
 	</div>
 	<div class="panel">
 		
@@ -146,9 +164,9 @@ for(let i=1;i<=3;i++){
 				<div class="param_shortcuts">
 					<div class="param_shortcut1" id="param_shortcut1">
 						<p>whitelist add </p>
-						<textarea class="param_shortcut_input"></textarea>
+						<textarea class="param_shortcut_input1" id="param_shortcut_input1"></textarea>
 						<!--<div class="param_shortcut_input_container">
-							
+						这里是带参数的那块指令	
 						</div>-->
 						
 					</div>
@@ -182,6 +200,9 @@ for(let i=1;i<=3;i++){
 		</button><br>
 		<button class="round_button" id="settings">
 			<img src="maps/settings.png" class="round_button_image" onclick="show_settings_form()">
+		</button><br>
+		<button class="round_button" id="help">
+			<img src="maps/help.png" class="round_button_image" onclick="location.href='docs'">
 		</button><br>
 	</div>
 	<div class="option_container">

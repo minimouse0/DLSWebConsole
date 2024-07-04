@@ -30,6 +30,18 @@
     box-shadow: 0px 0px 10px #ccc;
     padding: 1em;    
 }
+.settings_form_left_buttons{
+    display:flex;
+    flex-direction: column;
+    height:calc(100% + 15px);
+}
+.settings_form_left_buttons_buttom_buttons{
+    width:100%;
+    margin-bottom:1px;
+    display:flex;
+    flex:1;
+    flex-direction:column-reverse
+}
 .set_simple_shortcut_form_overlay{
     position:fixed;
     width:100%;
@@ -106,4 +118,17 @@
     color:white;
 
     background-color: #36f;
+}
+.developer_panel{
+    position:fixed;
+    width:640px;
+    height:360px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: white;
+    display:none;
+    z-index:6;
 }
