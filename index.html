@@ -36,7 +36,9 @@ var hardwareStatus={}
 setInterval(()=>{
 getHardwareStatus((response)=>{
 	//如果发现函数undefined就证明部分内容加载失败，自动刷新页面来重试
-	if(!document.getElementById("cpuchart").contentWindow.updateCPUStatus)location.reload()
+	//如果用户的网络很慢，会导致此处开始运行时一直undefined，所以需要换种思路
+	//现在是先改成跳过了，等发现不是尚未加载完毕而是真的加载失败了再说
+	if(!document.getElementById("cpuchart").contentWindow.updateCPUStatus)return;//location.reload()
 	document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
 	updateMemStatus(response.mem_used,response.mem_total);
 	updateDiskStatus(response.disks_info)
