@@ -1,7 +1,5 @@
-const host=parseCookie("host")
-const token=parseCookie("token")
-//const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
-//const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+const host=localStorage.getItem("host")
+const token=localStorage.getItem("token")
 
 /**
  * 向控制台发送指令
@@ -194,8 +192,8 @@ function init_simple_shortcut_cmd_list_conf_obj(host,number,key,value){
 
 function logout(){
  	//清除cookie中的地址和地址和token
-	document.cookie="host=";
-	document.cookie="token=";
+	localStorage.removeItem("host");
+	localStorage.removeItem("token");
 	//跳转至登录页面
     indextologin()
 }

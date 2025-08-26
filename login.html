@@ -6,20 +6,12 @@
 <link rel="stylesheet" type="text/css" href="login.css">
 <script src="lib/cookie.js"></script>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<script>
-function onLoginClick(){
-    let form = document.getElementById("login_info");
-    document.cookie="host="+form.url.value;
-    document.cookie="token="+form.token.value;
-    // 跳转到指定的 URL 地址
-    //如果URL其他位置含有login，或访问没有带.html就会跳转时发生错误或无法跳转
-    logintoindex()
-}
-</script>
+<script src="popups.js"></script>
+<script src="login.js"></script>
 </head>
 <body>
 <div class="panel">
-    <img src="../maps/logo.svg" class="logo">
+    <img src="maps/logo.svg" class="logo">
     <form action="/" id="login_info" method="post">
         <input type="text" id="url" name="url" class="login_info" placeholder="API地址" required><br>
         <input type="password" id="token" name="token" class="login_info" placeholder="token" required><br>

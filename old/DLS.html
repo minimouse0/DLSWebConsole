@@ -52,8 +52,8 @@
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
 
-const host=document.cookie.split(";")[0].match(/host=(.+)/)[1];
-const token=document.cookie.split(";")[1].match(/token=(.+)/)[1];
+const host=localStorage.getItem("host");
+const token=localStorage.getItem("token");
 //点击开关
 function get_server_status(callback){
 	var settings = {

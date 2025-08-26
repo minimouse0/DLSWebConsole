@@ -7,8 +7,8 @@
 <script>
 function onLoginClick(){
     let form = document.getElementById("login_info");
-    document.cookie="host="+form.name.value;
-    document.cookie="token="+form.token.value;
+    localStorage.setItem("host",form.name.value);
+    localStorage.setItem("token",form.token.value);
     // 跳转到指定的 URL 地址
     location.href =window.location.href.replace("login.html","DLS.html");
 

@@ -14,15 +14,16 @@ body{
 <link rel="stylesheet" type="text/css" href="shortcuts.css">
 <link rel="stylesheet" type="text/css" href="settings.css">
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="popups.js"></script>
 <script src="lib/cookie.js"></script>
 <script src="lib/JsonWeb.js"></script>
 <script src="panel.js"></script>
 <script src="developer.js"></script>
 <script>
 //网页加载完毕才加载的部分
-$(function(){
+$(()=>{
 //如果本地没有存储服务器登录数据则跳转至login.html要求用户登录
-if(!(parseCookie("host").length&&parseCookie("token"))){
+if(!(localStorage.getItem("host")?.length&&localStorage.getItem("token"))){
     indextologin()
 }
 
