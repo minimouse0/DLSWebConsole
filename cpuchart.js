@@ -86,6 +86,12 @@ function updateCPUStatus(status){
     }
     //清除原图表
     if(mainChart)mainChart.destroy();
+    try{
+        Chart
+    }
+    catch(e){
+        noritfy("暂时无法从第三方cdn获取Chart.js，请刷新网页以重试。")
+    }
     //生成新图表
     mainChart=new Chart(mainChartElement,config);
     //mainChart.canvas.parentNode.style.height=window.innerHeight
