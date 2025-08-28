@@ -73,6 +73,14 @@ $(document).on('keypress',function(e) {
     }
 });
 
+//如果是safari浏览器就把margin-left设置为-5
+if(
+    navigator.userAgent.includes("Safari")
+    &&navigator.userAgent.includes("Macintosh")
+    &&navigator.userAgent.includes("AppleWebKit")
+    &&!navigator.userAgent.includes("Chrome")
+)document.querySelectorAll('.round_button_image').forEach(element=>element.style["margin-left"]="-3px");
+//网页加载完毕才运行的部分结束
 })
 </script>
 </head>

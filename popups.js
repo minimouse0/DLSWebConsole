@@ -1,4 +1,4 @@
-function nortify(type,msg){
+function nortify(type,msg,time=5000){
     //判断当前是否由父页面加载
     if(window.self !== window.top){
         nortificationToTop(type,msg)
@@ -69,7 +69,7 @@ function nortify(type,msg){
             banner.remove();
           }, 1000); //清除
           
-    }, 5000); // 显示时间
+    }, time); // 显示时间
     
 }
 

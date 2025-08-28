@@ -36,6 +36,15 @@ $(document).on('keypress',function(e) {
 //更新顶部那排开关的状态
 let switch_button=document.getElementById("switch_auto_scroll");
     switch_button.style["background-color"]=getConfObj("auto_scroll")?"#36f":"#b0c9f7";
+
+//如果是safari浏览器就把margin-left设置为-5
+if(
+    navigator.userAgent.includes("Safari")
+    &&navigator.userAgent.includes("Macintosh")
+    &&navigator.userAgent.includes("AppleWebKit")
+    &&!navigator.userAgent.includes("Chrome")
+)document.querySelectorAll('.send_button_image').forEach(element=>element.style["margin-left"]="-5px");
+//网页开始时才加载的部分结束
 })
 </script>
 </head>
@@ -44,7 +53,7 @@ let switch_button=document.getElementById("switch_auto_scroll");
         <textarea id="command" placeholder="输入控制台命令" class="command">
             
         </textarea>
-        <button class="send_button" id="send" onclick="executeCustomCmd(document.getElementById('command'))">
+        <button class="send_button" id="send" onclick="executeCustomCmd(document.getElementById('command'),event)">
             <img src="maps/send.png" class="send_button_image">
         </button>
     </form>

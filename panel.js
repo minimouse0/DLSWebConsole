@@ -48,6 +48,8 @@ function execute_button_flash(){
 
 //由用户输入指令并点击执行按钮
 function executeCustomCmd(form,event){
+	//拦截表单默认提交行为
+    event.preventDefault();
 	execute(form.value,()=>{});
 }
 function get_server_status(callback){
