@@ -24,7 +24,7 @@ body{
 $(()=>{
 //如果本地没有存储服务器登录数据则跳转至login.html要求用户登录
 if(!(localStorage.getItem("host")?.length&&localStorage.getItem("token"))){
-    indextologin()
+    indextologin({reason:"noCredentials"})
 }
 
 //加载网页时立即从服务器获取进程状态
@@ -74,6 +74,10 @@ window.addEventListener('message',e=>{
 	//此处为顶层窗口，它将转发消息
 	if(e.data.type==="transfer"){
 		document.getElementById(e.data.destination).contentWindow.postMessage(e.data.data,'*')
+	}
+	//其他iframe要求顶层窗口跳转到登录页面
+	if(e.data.type==="toLogin"){
+		indextologin(e.data.data)
 	}
 })
 //网页加载完毕才运行的部分结束

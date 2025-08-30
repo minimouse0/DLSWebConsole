@@ -17,7 +17,7 @@ let logs=[];
 let last_new_log=new Date();
 /**用于存储上一行的颜色代码，用于下一行的开头 */
 // let last_line_color_code="0";
-function refresh_console(){
+async function refresh_console(){
     try{
         let settings = {
             "url": host+"/terminal_log?token="+token+"&log_id="+current_log_id.toString(),
@@ -28,7 +28,8 @@ function refresh_console(){
             }
         };
 
-        $.ajax(settings).done(response=>{
+        await new Promise((resolve,reject)=>$.ajax(settings).done(response=>{
+            console.log(response)
             logs=merge_log(logs,response.log_list);
             //直接将整个控制台内容替换
             document.getElementById("console_log").innerHTML=parse_log(logs)
@@ -40,7 +41,21 @@ function refresh_console(){
                 if(getConfObj("auto_scroll"))scrollToBottom();
 
             }
-        });        
+            resolve()
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            switch(jqXHR.status){
+                case 403:
+                    //跳转回登录界面
+                    window.parent.postMessage({type:"toLogin",data:{reason:"tokenIncorrect"}})
+                    break;
+                case 502:
+                    reject("目前无法连接至DLS API所在的远程服务器，错误码：502")
+                    break;
+                default:
+                    reject(errorThrown);
+                    break;
+            }
+        }));        
     }catch(e){
         notify("error","刷新控制台时出错：\n"+e+"\n本次不刷新。");
     }

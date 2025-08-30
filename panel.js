@@ -209,7 +209,7 @@ function logout(){
 	localStorage.removeItem("host");
 	localStorage.removeItem("token");
 	//跳转至登录页面
-    indextologin()
+    indextologin({reason:"logout"})
 }
 function getHardwareStatus(callback){
     var settings = {
@@ -222,7 +222,17 @@ function getHardwareStatus(callback){
 
     $.ajax(settings).done(function (response) {
         callback(response);
-    });
+    }).fail((jqXHR, textStatus, errorThrown) => {
+		
+		switch(jqXHR.status){
+			case 502:
+				notify("error","目前无法连接至DLS API所在的远程服务器，错误码：502")
+				break;
+			default:
+				notify("error","请求服务器状态时发生未知错误：\n"+errorThrown);
+				break;
+		}
+	});
 }
 function refreshHardwareStatus(){
     //判断当前是否位于cpuchart所在页面
