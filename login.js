@@ -10,6 +10,6 @@ function onLoginClick(){
 $(()=>{
     if(!(localStorage.getItem("host")?.length&&localStorage.getItem("token"))){
         //弹窗告诉用户被跳转到登录界面的原因是登录凭据丢失
-        nortify("info","没有在浏览器中找到任何有效的已存储登录凭据。请重新输入登录凭据。")
+        notify("info","没有在浏览器中找到任何有效的已存储登录凭据。请重新输入登录凭据。")
     }
 })

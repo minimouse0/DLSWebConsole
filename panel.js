@@ -1,6 +1,10 @@
 const host=localStorage.getItem("host")
 const token=localStorage.getItem("token")
 
+function activeConsole(){
+	//请求顶层窗口转发
+	window.parent.postMessage({type:"transfer",destination:"serverConsole",data:{type:"activeConsole",data:{}}})
+}
 /**
  * 向控制台发送指令
  * @param {string} cmd 指令
@@ -29,6 +33,8 @@ function execute(cmd,callback){
 
 		}
 	});
+	//激活控制台
+    activeConsole()
 }
 
 function execute_button_flash(){
@@ -45,12 +51,21 @@ function execute_button_flash(){
 		//setTimeout(()=>execute_button.style["transition"]="0.2s",120)
 	},200);
 }
-
+const customCmdHistory=[]
+function recordCmdHistory(cmd){
+	//如果和上条历史命令一致，那么不记录
+	if(cmd===customCmdHistory[customCmdHistory.length-1])return;
+	//如果为空则不记录
+	if(cmd=="")return;
+	customCmdHistory.push(cmd);
+}
 //由用户输入指令并点击执行按钮
 function executeCustomCmd(form,event){
 	//拦截表单默认提交行为
     event.preventDefault();
 	execute(form.value,()=>{});
+	//记录为历史命令
+	recordCmdHistory(form.value)
 }
 function get_server_status(callback){
 	var settings = {
@@ -65,30 +80,28 @@ function get_server_status(callback){
 
 function _switch(){
 	//首先获取服务器是否开启，然后执行开机或关机
-		switch_button=document.getElementById('power');
-		get_server_status((status)=>{
-			if(status){//服务器开启则执行关机
-				switch_button_color(switch_button,1);
-				execute("stop");
-			}
-			else{//服务器关闭则执行开机
-				switch_button_color(switch_button,0);
-				execute("start");
-			}
-			switch_button_wait_status_change(switch_button,status);//执行开关命令后等待改变开关按钮颜色
-		})
-
-
+	switch_button=document.getElementById('power');
+	get_server_status((status)=>{
+		if(status){//服务器开启则执行关机
+			switch_button_color(switch_button,1);
+			execute("stop");
+		}
+		else{//服务器关闭则执行开机
+			switch_button_color(switch_button,0);
+			execute("start");
+		}
+		switch_button_wait_status_change(switch_button,status);//执行开关命令后等待改变开关按钮颜色
+	})
 }
 function switch_button_wait_status_change(switch_button,old_status){
-		let switch_button_task_id=setInterval(()=>{//轮询进程状态等待其改变
-			get_server_status((current_status)=>{
-				if(current_status!=old_status){//一旦有一次请求发现状态改变
-					switch_button_color(switch_button,Number(current_status));
-					clearInterval(switch_button_task_id);//既然已经发现状态改变，执行完改变后立刻停止轮询
-				}
-			})
-		},500)		
+	let switch_button_task_id=setInterval(()=>{//轮询进程状态等待其改变
+		get_server_status((current_status)=>{
+			if(current_status!=old_status){//一旦有一次请求发现状态改变
+				switch_button_color(switch_button,Number(current_status));
+				clearInterval(switch_button_task_id);//既然已经发现状态改变，执行完改变后立刻停止轮询
+			}
+		})
+	},500)		
 
 }
 function switch_button_color(switch_button,status){
@@ -100,7 +113,6 @@ function switch_button_color(switch_button,status){
 }
 function executeBak(){
     execute('startBak');
-    setTimeout(()=>{get_server_status()},200);
 }
 function executeRestart(){
     execute("restart");
@@ -212,6 +224,27 @@ function getHardwareStatus(callback){
         callback(response);
     });
 }
+function refreshHardwareStatus(){
+    //判断当前是否位于cpuchart所在页面
+	//如果不位于，那么发出信号
+	//对于未加载完毕的情况也有用，因为未加载完毕的情况真正该加载cpuchart的页面也会认为自己不应该加载并发信号，最后就没有人响应了
+    if(!document.getElementById("cpuchart")?.contentWindow?.updateCPUStatus){
+        window.parent.postMessage({type:"refreshHardwareStatus",data:{}},'*')
+        return
+    }
+	getHardwareStatus(response=>{
+		document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
+		updateMemStatus(response.mem_used,response.mem_total);
+		updateDiskStatus(response.disks_info)
+	})
+}
+window.addEventListener('message', e=>{
+	if(e.data.type==="refreshHardwareStatus"){
+		//如果自己不是目标页面或此时还未加载，那么直接不处理
+		if(!document.getElementById("cpuchart")?.contentWindow?.updateCPUStatus)return;
+		refreshHardwareStatus();
+	}
+})	
 function updateMemStatus(memUsed,memTotal){
 	document.getElementById("mem_column").style.width="calc(calc(100% - 50px) * "+(memUsed/memTotal).toString()+")"
 	document.getElementById("mem_button").innerHTML=memUsed+"MB/"+memTotal+"MB"

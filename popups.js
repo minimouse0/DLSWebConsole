@@ -1,4 +1,5 @@
-function nortify(type,msg,time=5000){
+let zIndex=9000;
+function notify(type,msg,time=5000){
     //判断当前是否由父页面加载
     if(window.self !== window.top){
         nortificationToTop(type,msg)
@@ -18,7 +19,7 @@ function nortify(type,msg,time=5000){
             bgColor = 'rgba(230, 247, 255, 0.8)';   // 淡蓝玻璃
             textColor = '#0050b3';
             break;
-        case 'warning':
+        case 'warn':
             bgColor = 'rgba(255, 251, 230, 0.8)';
             textColor = '#d48806';
             break;
@@ -44,7 +45,9 @@ function nortify(type,msg,time=5000){
     banner.style.borderBottom = '1px solid #ccc';
     banner.style.borderRadius = '8px';
     banner.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-    banner.style.zIndex = '9999';
+    banner.style.zIndex = zIndex.toString();
+    if(zIndex<9999)zIndex++;
+    else zIndex=9000;
     banner.style.transform = 'translateY(-170%)'; // 初始在页面上方
 
     // 添加淡入动画
@@ -74,11 +77,13 @@ function nortify(type,msg,time=5000){
 }
 
 function nortificationToTop(type,msg){
-    window.parent.postMessage({type,msg},'*')
+    window.parent.postMessage({type:"notify",data:{type,msg}},'*')
 }
 
 window.addEventListener('message', e=>{
-    //如果自己不是父页面，那么直接不处理
-    if(window.self !== window.top)return;
-    nortify(e.data.type,e.data.msg);
+    if(e.data.type==="notify"){
+        //如果自己不是父页面，那么直接不处理
+        if(window.self !== window.top)return;
+        notify(e.data.data.type,e.data.data.msg);
+    }
 })

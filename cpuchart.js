@@ -90,7 +90,7 @@ function updateCPUStatus(status){
         Chart
     }
     catch(e){
-        nortify("error","暂时无法从第三方cdn获取Chart.js，请刷新网页以重试。")
+        notify("error","暂时无法从第三方cdn获取Chart.js，请刷新网页以重试。")
     }
     //生成新图表
     mainChart=new Chart(mainChartElement,config);

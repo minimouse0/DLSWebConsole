@@ -34,17 +34,7 @@ get_server_status((status)=>{
 
 //开始循环请求服务器硬件使用情况
 var hardwareStatus={}
-setInterval(()=>{
-getHardwareStatus((response)=>{
-	//如果发现函数undefined就证明部分内容加载失败，自动刷新页面来重试
-	//如果用户的网络很慢，会导致此处开始运行时一直undefined，所以需要换种思路
-	//现在是先改成跳过了，等发现不是尚未加载完毕而是真的加载失败了再说
-	if(!document.getElementById("cpuchart").contentWindow.updateCPUStatus)return;//location.reload()
-	document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
-	updateMemStatus(response.mem_used,response.mem_total);
-	updateDiskStatus(response.disks_info)
-})
-},1100)
+
 
 //去掉这行代码的注释可以直接从代码层面清除cookie
 //document.cookie="config=;SameSite=Strict"
@@ -80,6 +70,12 @@ if(
     &&navigator.userAgent.includes("AppleWebKit")
     &&!navigator.userAgent.includes("Chrome")
 )document.querySelectorAll('.round_button_image').forEach(element=>element.style["margin-left"]="-3px");
+window.addEventListener('message',e=>{
+	//此处为顶层窗口，它将转发消息
+	if(e.data.type==="transfer"){
+		document.getElementById(e.data.destination).contentWindow.postMessage(e.data.data,'*')
+	}
+})
 //网页加载完毕才运行的部分结束
 })
 </script>
@@ -143,7 +139,7 @@ if(
 		
 		<div class="console_controller">
 			
-			<iframe src="serverconsole.html" class="console_output" frameborder="0"></iframe>
+			<iframe id="serverConsole" src="serverconsole.html" class="console_output" frameborder="0"></iframe>
 		</div>
 		
 		<div class="panel_right">

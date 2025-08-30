@@ -42,7 +42,7 @@ function refresh_console(){
             }
         });        
     }catch(e){
-        nortify("error","刷新控制台时出错：\n"+e+"\n本次不刷新。");
+        notify("error","刷新控制台时出错：\n"+e+"\n本次不刷新。");
     }
 
 }
@@ -104,18 +104,37 @@ function parse_log(logs){
     log_raw_text=log_raw_text+"<br><br><br>";
     return log_raw_text;
 }
+let consoleActive=false;
 $(()=>{(async ()=>{
-let waitTime=1000;
 while(1){
+    //刷新控制台
     refresh_console();
-    //如果上次输出在5s内，就快速轮询直至上次输出超时，即检测到新输出则立刻活跃一会然后放慢速度
-    if(Date.now()-last_new_log.getTime()<5000)waitTime=350
+    //如果上次输出在3s内，就快速轮询直至上次输出超时，即检测到新输出则立刻活跃一会然后放慢速度
+    if(Date.now()-last_new_log.getTime()<3000)consoleActive=true
     //如果确实是超时了就放慢速度
-    else waitTime=1000
+    else consoleActive=false
     //开始按指定时间进行等待
-    await new Promise(resolve=>setInterval(resolve,waitTime))
+    await new Promise(resolve=>setInterval(resolve,400))
+    //如果控制台不活跃，那么刷新硬件状态后再等待600ms，如果控制台活跃，那么跳过状态刷新，把所有的机会留给控制台
+    if(!consoleActive){
+        refreshHardwareStatus()
+        await new Promise(resolve=>setInterval(resolve,600))
+    }
 }})()})
-
+function beActive(){
+    consoleActive=true;
+    last_new_log=new Date()
+    //不论如何，强制激活时必须立即刷新控制台
+    //按最坏的情况来看，需要在执行完命令的200ms和400ms后各刷新一次
+    setTimeout(refresh_console,200)
+    setTimeout(refresh_console,400)
+}
+//监听其他网页部分发来的激活控制台高速刷新请求
+window.addEventListener('message', e=>{
+	if(e.data.type==="activeConsole"){
+		beActive();
+	}
+})	
 function update_console_toolbox(){
     update_auto_scroll_switch();
 }
