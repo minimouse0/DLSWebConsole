@@ -86,7 +86,7 @@ function switch_button_wait_status_change(switch_button,old_status){
 		let switch_button_task_id=setInterval(()=>{//轮询进程状态等待其改变
 			get_server_status((current_status)=>{
 				if(current_status!=old_status){//一旦有一次请求发现状态改变
-					console.log(current_status)
+					//console.log(current_status)
 					switch_button_color(switch_button,Number(current_status));
 					clearInterval(switch_button_task_id);//既然已经发现状态改变，执行完改变后立刻停止轮询
 				}

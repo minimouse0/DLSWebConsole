@@ -15,12 +15,15 @@
 <script src="lib/cookie.js"></script>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="popups.js"></script>
+<script src="DLSProtocol.js"></script>
 <script src="ansi2html.js"></script>
 <script src="serverconsole.js"></script>
 <script src="panel.js"></script>
 <script>
 //网页加载完毕才加载的部分
 $(()=>{
+//如果使用DLSProtocol则打开ws
+if(isDLSProtocol())refreshWSConnection(localStorage.getItem("host"))
 let userInputContent=""
 //清空网页加载时莫名其妙出现的一堆tab
 document.getElementById('command').value=userInputContent;
@@ -97,7 +100,7 @@ if(
         </button>
     </div>
     <div class="console_text">
-        <p id="console_log"></p>
+        <p id="console_log"></p><br><br><br>
     </div>
 
 </body>

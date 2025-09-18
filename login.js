@@ -28,7 +28,7 @@ $(()=>{
             break;
         case "tokenIncorrect":
             //帮用户把host填好
-            console.log(document.getElementById('url').value)
+            //console.log(document.getElementById('url').value)
             document.getElementById('url').value=localStorage.getItem("host");
             notify("warn","token错误，请重新输入")
             break;

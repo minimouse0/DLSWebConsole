@@ -29,7 +29,7 @@ async function refresh_console(){
         };
 
         await new Promise((resolve,reject)=>$.ajax(settings).done(response=>{
-            console.log(response)
+            //console.log(response)
             logs=merge_log(logs,response.log_list);
             //直接将整个控制台内容替换
             document.getElementById("console_log").innerHTML=parse_log(logs)
@@ -61,6 +61,7 @@ async function refresh_console(){
     }
 
 }
+
 function merge_log(logs,new_logs){
     /*旧日志尾部id logs[logs.length-1].log_id
     新日志头部id new_logs[new_logs.length-1].log_id
@@ -116,26 +117,66 @@ function parse_log(logs){
 
     }
     //添加空行来保证不输出不被下面输入框挡住
-    log_raw_text=log_raw_text+"<br><br><br>";
+    // log_raw_text=log_raw_text+"<br><br><br>";
     return log_raw_text;
 }
+function appendConsoleLog(log){
+    
+    const newLogsContainer=document.createElement('span')
+    newLogsContainer.innerHTML=color_html_convert(log)
+    document.getElementById("console_log").appendChild(newLogsContainer).appendChild(document.createElement('br'))
+    if(getConfObj("auto_scroll"))scrollToBottom();
+}
 let consoleActive=false;
+let consoleHistoryFetched=false;
 $(()=>{(async ()=>{
-while(1){
-    //刷新控制台
-    refresh_console();
-    //如果上次输出在3s内，就快速轮询直至上次输出超时，即检测到新输出则立刻活跃一会然后放慢速度
-    if(Date.now()-last_new_log.getTime()<3000)consoleActive=true
-    //如果确实是超时了就放慢速度
-    else consoleActive=false
-    //开始按指定时间进行等待
-    await new Promise(resolve=>setInterval(resolve,400))
-    //如果控制台不活跃，那么刷新硬件状态后再等待600ms，如果控制台活跃，那么跳过状态刷新，把所有的机会留给控制台
-    if(!consoleActive){
-        refreshHardwareStatus()
-        await new Promise(resolve=>setInterval(resolve,600))
+if(isDLSProtocol()){
+    ServerEvents.onWSOpen.push(()=>{
+        if(consoleHistoryFetched)return;
+        //首先从服务器获取所有日志
+        const requestUID=generateToken()
+        ServerEvents.expectations.add({
+            type:"fetch_all_server_status_result",
+            requestUID,
+            callback:msg=>{
+                msg.data.forEach(log=>
+                    appendConsoleLog(log)
+                )
+            }
+        })
+        sendData(JSON.stringify({
+            type:"fetch_all_server_status",
+            requestUID
+        }))
+        consoleHistoryFetched=true;
+    })
+
+    //使用DLSProtocol时，监听到控制台更新内容时，在现有控制台区域附加日志文本
+    ServerEvents.onConsoleUpdate.push(msg=>{
+        msg.data.forEach(log=>{
+            appendConsoleLog(log)
+        })
+    })
+}
+else{
+    while(1){
+        //刷新控制台
+        refresh_console();
+        //如果上次输出在3s内，就快速轮询直至上次输出超时，即检测到新输出则立刻活跃一会然后放慢速度
+        if(Date.now()-last_new_log.getTime()<3000)consoleActive=true
+        //如果确实是超时了就放慢速度
+        else consoleActive=false
+        //开始按指定时间进行等待
+        await new Promise(resolve=>setInterval(resolve,400))
+        //如果控制台不活跃，那么刷新硬件状态后再等待600ms，如果控制台活跃，那么跳过状态刷新，把所有的机会留给控制台
+        if(!consoleActive){
+            refreshHardwareStatus()
+            await new Promise(resolve=>setInterval(resolve,600))
+        }
+
     }
-}})()})
+}
+})()})
 function beActive(){
     consoleActive=true;
     last_new_log=new Date()

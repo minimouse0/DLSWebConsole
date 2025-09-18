@@ -11,30 +11,41 @@ function activeConsole(){
  * @param callback 收到发送结果后执行的回调函数
  */
 function execute(cmd,callback){
-	let settings = {
-		"url": host+"/execute",
-		"method": "POST",
-		"timeout": 0,
-		"headers": {
-			"Content-Type": "application/json"
-		},
-		"data": JSON.stringify({
-			"token": token,
-			"cmd": [
-				cmd
-			]
-		}),
-	};
+	if(isDLSProtocol()){
+		sendData(JSON.stringify({
+			type:"execute",
+			data:cmd
+		}))
+		//由于协议暂时没有发送成功的提示，所以立刻闪灯
+		execute_button_flash()			
+	}
+	else{
+		let settings = {
+			"url": host+"/execute",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data": JSON.stringify({
+				"token": token,
+				"cmd": [
+					cmd
+				]
+			}),
+		};
 
-	$.ajax(settings).done(function (response) {
-		//这里做成如果发送成功就调用css让执行键闪一下绿灯
-		if(response.msg=="提交命令成功!"){
-			execute_button_flash();
+		$.ajax(settings).done(function (response) {
+			//这里做成如果发送成功就调用css让执行键闪一下绿灯
+			if(response.msg=="提交命令成功!"){
+				execute_button_flash();
 
-		}
-	});
-	//激活控制台
-    activeConsole()
+			}
+		});		
+	}
+
+	//原生协议需要激活控制台
+    if(!isDLSProtocol())activeConsole()
 }
 
 function execute_button_flash(){
@@ -68,14 +79,31 @@ function executeCustomCmd(form,event){
 	recordCmdHistory(form.value)
 }
 function get_server_status(callback){
-	var settings = {
-		"url": host+"/process_status",
-		"method": "GET",
-		"timeout": 0,
-	};
-	$.ajax(settings).done((response)=>{
-		callback(response.online);
-	});
+	if(isDLSProtocol()){
+        const requestUID=generateToken()
+        ServerEvents.expectations.add({
+            type:"fetch_process_status_result",
+            requestUID,
+            callback:msg=>{
+                callback(msg.data)
+            }
+        })
+		sendData(JSON.stringify({
+			type:"fetch_process_status",
+			requestUID:requestUID
+		}))
+	}
+	else{
+		var settings = {
+			"url": host+"/process_status",
+			"method": "GET",
+			"timeout": 0,
+		};
+		$.ajax(settings).done((response)=>{
+			callback(response.online);
+		});		
+	}
+
 }
 
 function _switch(){
@@ -90,7 +118,8 @@ function _switch(){
 			switch_button_color(switch_button,0);
 			execute("start");
 		}
-		switch_button_wait_status_change(switch_button,status);//执行开关命令后等待改变开关按钮颜色
+		//原生协议下执行开关命令后等待改变开关按钮颜色
+		if(!isDLSProtocol())switch_button_wait_status_change(switch_button,status);
 	})
 }
 function switch_button_wait_status_change(switch_button,old_status){
@@ -212,29 +241,45 @@ function logout(){
     indextologin({reason:"logout"})
 }
 function getHardwareStatus(callback){
-    var settings = {
-        "url": host+"/server_status",
-        "method": "GET",
-        "timeout": 0,
-		"headers": {
-		 },
-    };
+	if(isDLSProtocol()){
+        const requestUID=generateToken()
+        ServerEvents.expectations.add({
+            type:"fetch_hardware_status_result",
+            requestUID,
+            callback:msg=>{
+                callback(msg.data)
+            }
+        })
+		sendData(JSON.stringify({
+			type:"fetch_hardware_status",
+			requestUID
+		}))
+	}
+	else{
+		var settings = {
+			"url": host+"/server_status",
+			"method": "GET",
+			"timeout": 0,
+			"headers": {
+			},
+		};
 
-    $.ajax(settings).done(function (response) {
-        callback(response);
-    }).fail((jqXHR, textStatus, errorThrown) => {
-		
-		switch(jqXHR.status){
-			case 502:
-				notify("error","目前无法连接至DLS API所在的远程服务器，错误码：502")
-				break;
-			default:
-				notify("error","请求服务器状态时发生未知错误：\n"+errorThrown);
-				break;
-		}
-	});
+		$.ajax(settings).done(function (response) {
+			callback(response);
+		}).fail((jqXHR, textStatus, errorThrown) => {
+			
+			switch(jqXHR.status){
+				case 502:
+					notify("error","目前无法连接至DLS API所在的远程服务器，错误码：502")
+					break;
+				default:
+					notify("error","请求服务器状态时发生未知错误：\n"+errorThrown);
+					break;
+			}
+		});
+	}
 }
-function refreshHardwareStatus(){
+async function refreshHardwareStatus(){
     //判断当前是否位于cpuchart所在页面
 	//如果不位于，那么发出信号
 	//对于未加载完毕的情况也有用，因为未加载完毕的情况真正该加载cpuchart的页面也会认为自己不应该加载并发信号，最后就没有人响应了
@@ -242,11 +287,12 @@ function refreshHardwareStatus(){
         window.parent.postMessage({type:"refreshHardwareStatus",data:{}},'*')
         return
     }
-	getHardwareStatus(response=>{
+	await new Promise(resolve=>getHardwareStatus(response=>{
 		document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
 		updateMemStatus(response.mem_used,response.mem_total);
 		updateDiskStatus(response.disks_info)
-	})
+		resolve()
+	}))
 }
 window.addEventListener('message', e=>{
 	if(e.data.type==="refreshHardwareStatus"){
