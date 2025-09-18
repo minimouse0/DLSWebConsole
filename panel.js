@@ -285,13 +285,14 @@ async function refreshHardwareStatus(){
 	//对于未加载完毕的情况也有用，因为未加载完毕的情况真正该加载cpuchart的页面也会认为自己不应该加载并发信号，最后就没有人响应了
     if(!document.getElementById("cpuchart")?.contentWindow?.updateCPUStatus){
         window.parent.postMessage({type:"refreshHardwareStatus",data:{}},'*')
-        return
+		//如果未加载，那么应该提示调用方自己此时无法执行
+        return {}
     }
-	await new Promise(resolve=>getHardwareStatus(response=>{
+	return new Promise(resolve=>getHardwareStatus(response=>{
 		document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
 		updateMemStatus(response.mem_used,response.mem_total);
 		updateDiskStatus(response.disks_info)
-		resolve()
+		resolve(response)
 	}))
 }
 window.addEventListener('message', e=>{

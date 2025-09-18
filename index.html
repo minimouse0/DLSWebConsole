@@ -41,7 +41,7 @@ if(isDLSProtocol()){
 			await new Promise(resolve=>setTimeout(resolve,100));
 			continue;
 		}
-		await refreshHardwareStatus()
+		if(Object.keys(await refreshHardwareStatus()).length==0)await new Promise(resolve=>setTimeout(resolve,100));
 	}})()
 }
 
