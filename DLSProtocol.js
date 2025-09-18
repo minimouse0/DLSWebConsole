@@ -38,14 +38,15 @@ function refreshWSConnection(server_address){
         wsRetryTimes=0;
         //showGeneralAlert("websocket成功，连接已建立")
         // 接收到后端消息时触发
-        socket.addEventListener("message", e=> {
+        socket.addEventListener("message", event=> {
             //if(new RegExp(/username/).test(e.data.toString()))alert("发生未处理的错误：\n"+e.data)
             let parsedResult={}
             try{
-                parsedResult=JSON.parse(e.data)
+                parsedResult=JSON.parse(event.data)
             }
             catch(e){
-                showGeneralAlert("服务器发送的数据无法被正常处理，请联系管理员。以下是详细的错误：\n"+e)
+                notify("error","服务器发送的数据无法被正常处理，请联系管理员。以下是详细的错误：\n"+e)
+                console.log(event.data)
                 console.log("服务器发送了破损的数据："+e)
                 return
             }
@@ -58,7 +59,7 @@ function refreshWSConnection(server_address){
             indextologin({reason:"tokenIncorrect"})
         }
         else{
-            notify("error","连接已关闭")
+            notify("error","连接已关闭：\n"+JSON.stringify(event,undefined,4))
         }
     }
 }
@@ -80,6 +81,7 @@ class ServerEvents{
         switch(msg.error){
             //token错误会导致跳转至登录界面
             case "token_incorrect":location.href="login.html";break;
+            default:notify("error","暂时无法处理的错误："+msg.error)
         }
     }
     static serverMsgHandler(msg){
@@ -107,7 +109,10 @@ class ServerEvents{
             }
             case "error":{
                 ServerEvents.onErrorMsg(msg)
+                break;
             }
+            case "hb":break;
+            default:throw new Error("不支持的行为："+type)
         }        
     }
 }
