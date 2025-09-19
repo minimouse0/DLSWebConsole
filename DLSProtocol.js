@@ -98,7 +98,6 @@ class ServerEvents{
                 ServerEvents.onConsoleUpdate.forEach(callback=>callback(msg))
                 break;
             }
-            case "fetch_process_status":
             case "process_status_update":{
                 ServerEvents.onProcessStatusUpdate.forEach(callback=>callback(msg))
                 break;
