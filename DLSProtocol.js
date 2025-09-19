@@ -103,10 +103,6 @@ class ServerEvents{
                 ServerEvents.onProcessStatusUpdate.forEach(callback=>callback(msg))
                 break;
             }
-            case "hardware_status_update":{
-                ServerEvents.onHardwareStatusUpdate.forEach(callback=>callback(msg))
-                break;
-            }
             case "error":{
                 ServerEvents.onErrorMsg(msg)
                 break;
