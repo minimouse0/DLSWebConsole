@@ -68,6 +68,8 @@
     font-size:24px;
     color:white;
     font-family: Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+    padding:0;
 }
 .simple_shortcut_pad{
     height:100%;

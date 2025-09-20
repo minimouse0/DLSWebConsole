@@ -73,13 +73,6 @@ $(document).on('keydown', function(e) {
 let switch_button=document.getElementById("switch_auto_scroll");
     switch_button.style["background-color"]=getConfObj("auto_scroll")?"#36f":"#b0c9f7";
 
-//如果是safari浏览器就把margin-left设置为-5
-if(
-    navigator.userAgent.includes("Safari")
-    &&navigator.userAgent.includes("Macintosh")
-    &&navigator.userAgent.includes("AppleWebKit")
-    &&!navigator.userAgent.includes("Chrome")
-)document.querySelectorAll('.send_button_image').forEach(element=>element.style["margin-left"]="-5px");
 
 //网页开始时才加载的部分结束
 })

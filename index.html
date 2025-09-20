@@ -15,6 +15,7 @@ body{
 <link rel="stylesheet" type="text/css" href="settings.css">
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="popups.js"></script>
+<script src="adapt.js"></script>
 <script src="lib/cookie.js"></script>
 <script src="lib/JsonWeb.js"></script>
 <script src="DLSProtocol.js"></script>
@@ -37,17 +38,30 @@ if(isDLSProtocol()){
 	});
 	//DLSProtocol时需要单独建立硬件状态请求循环
 	(async ()=>{while(1){
+		const requestStartTime=Date.now()
 		if(!connectionOpened){
 			await new Promise(resolve=>setTimeout(resolve,100));
 			continue;
 		}
-		if(Object.keys(await refreshHardwareStatus()).length==0)await new Promise(resolve=>setTimeout(resolve,100));
+		try{
+			if(Object.keys(await refreshHardwareStatus()).length==0)await new Promise(resolve=>setTimeout(resolve,100));
+		}
+		catch(e){
+			if(e.constructor.name=="RequestTimedoutError"){
+				notify("error","无法刷新硬件状态："+e)
+				continue;
+			}
+			else throw e
+		}
+		//即使是正确地获取了，也需要有一个最基本的延迟
+		const timeCost=Date.now()-requestStartTime
+		if(timeCost<500)await new Promise(resolve=>setTimeout(resolve,500-timeCost));
 	}})()
 }
 
 //加载网页时立即从服务器获取进程状态
 if(isDLSProtocol()){
-	ServerEvents.onWSOpen.push(()=>{
+	ServerEvents.onAuthed.push(()=>{
 		get_server_status((status)=>{
 			switch_button_color(document.getElementById('power'),Number(status));
 		})
@@ -92,13 +106,6 @@ $(document).on('keypress',function(e) {
     }
 });
 
-//如果是safari浏览器就把margin-left设置为-5
-if(
-    navigator.userAgent.includes("Safari")
-    &&navigator.userAgent.includes("Macintosh")
-    &&navigator.userAgent.includes("AppleWebKit")
-    &&!navigator.userAgent.includes("Chrome")
-)document.querySelectorAll('.round_button_image').forEach(element=>element.style["margin-left"]="-3px");
 window.addEventListener('message',e=>{
 	//此处为顶层窗口，它将转发消息
 	if(e.data.type==="transfer"){
@@ -109,6 +116,14 @@ window.addEventListener('message',e=>{
 		indextologin(e.data.data)
 	}
 })
+//实时修改整体页面高度来适应移动浏览器
+function setRealVH() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+window.addEventListener('resize', setRealVH);
+setRealVH();
+
 //网页加载完毕才运行的部分结束
 })
 </script>
@@ -124,7 +139,7 @@ window.addEventListener('message',e=>{
 				<div class="settings_form_left_buttons_buttom_buttons">
 					<button class="round_button" id="logout" onclick="logout()">
 						<img src="maps/logout.png" class="round_button_image">
-					</button><br>
+					</button><!--safari总是会在这里搞出15px的行间距，所以这个<br>去掉了-->
 					<button class="round_button" id="show_developer_panel" onclick="show_developer_panel()">
 						<img src="maps/developer.png" class="round_button_image">
 					</button><br>

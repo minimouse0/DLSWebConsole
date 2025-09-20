@@ -13,6 +13,8 @@
     box-shadow: 0px 0px 10px #b0c9f7;
     background-color: #b0c9f7;
     transition: 0.6s;
+    /*如果这里不加padding，在ipad版safari上padding会过大导致错位*/
+    padding:0px
 }
 .round_button_image{
     margin-top:3px;

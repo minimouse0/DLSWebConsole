@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <title>DLS管理面板 - 请登录</title>
 <link rel="stylesheet" type="text/css" href="login.css">
+<link rel="stylesheet" type="text/css" href="basicWidgets.css">
 <script src="lib/cookie.js"></script>
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="popups.js"></script>
+<script src="adapt.js"></script>
 <script src="login.js"></script>
 </head>
 <body>
@@ -14,9 +16,32 @@
     <img src="maps/logo.svg" class="logo">
     <form action="/" id="login_info" method="post">
         <input type="text" id="url" name="url" class="login_info" placeholder="API地址" required><br>
+        <input type="text" id="server_name" name="server_name" class="login_info" placeholder="服务器名(使用DLSPRtocol)连接时使用"><br>
         <input type="password" id="token" name="token" class="login_info" placeholder="token" required><br>
-        <button type="button" class="login_button" onclick="onLoginClick()">登录</button>
+        <button type="button" class="login_button" onclick="onLoginClick()">登录</button><br>
+        <button type="button" class="login_button" onclick="showHistory()">曾使用过的凭据</button>
     </form>
+	<div class="history_form" id="history_form">
+		<div class="history_form_container" id="history_form_container">
+			<div class="history_form_left_buttons">
+				<button class="round_button" id="close_history_form" onclick="hideHistory()">
+					<img src="maps/close.png" class="round_button_image">
+				</button><br>
+				<div class="history_form_left_buttons_buttom_buttons">
+					<button class="round_button" id="last_page" onclick="logout()">
+						<img src="maps/down.png" class="round_button_image">
+					</button>
+					<button class="round_button" id="next_page" onclick="show_developer_panel()">
+						<img src="maps/send.png" class="round_button_image">
+					</button><br>
+
+				</div>	
+			</div>
+			<div class="history_form_table" id="history_form_table">
+			</div>
+
+		</div>
+	</div>
 </div>
 </body>
 </html>

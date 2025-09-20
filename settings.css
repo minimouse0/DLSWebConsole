@@ -42,6 +42,18 @@
     flex:1;
     flex-direction:column-reverse
 }
+.settings_form_table{
+    margin-left:15px;
+    width:calc(100% - 65px);
+}
+.settings_form_line1{
+    display:flex;
+    height:50px;
+}
+.settings_form_line1_block{
+    width:15px;
+    height:100%;
+}
 .set_simple_shortcut_form_overlay{
     position:fixed;
     width:100%;
@@ -70,12 +82,13 @@
     margin-bottom: 5px;
     width:100%;
     height:60px;
+    padding:0;
 }
 .set_simple_shortcut_form_title{
     justify-content:center;
     align-items: center;
     height:50px;
-    width:calc(100% - 50px);
+    width:calc(100% - 70px);
     margin-left:15px;
     font-size:33px;
     font-family:Arial, Helvetica, sans-serif
@@ -84,7 +97,7 @@
     justify-content:center;
     align-items: center;
     height:40px;
-    width:calc(100% - 50px);
+    width:calc(100% - 70px);
     margin-left:15px;
     font-size:28px;
     font-family:Arial, Helvetica, sans-serif;
@@ -95,18 +108,11 @@
     border-top: 0px;
     border-left: 0px;
     border-right: 0px;
-}
-.settings_form_table{
-    margin-left:15px;
-    width:100%;
-}
-.settings_form_line1{
-    display:flex;
-    height:50px;
-}
-.settings_form_line1_block{
-    width:15px;
-    height:100%;
+    padding:0;
+    border-radius: 0; /* 去除圆角 */
+    -webkit-appearance: none; /* 移除 iOS 默认样式 */
+    appearance: none;
+    box-shadow: none; /* 去除默认阴影 */
 }
 .show_simple_shortcut_custom_form{
     height:100%;
@@ -116,8 +122,10 @@
     border: 1px solid #bcbcbc;
     font-size:25px;
     color:white;
-
+    white-space: nowrap;
+    padding:0;
     background-color: #36f;
+
 }
 .developer_panel{
     position:fixed;

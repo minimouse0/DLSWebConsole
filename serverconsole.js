@@ -131,12 +131,12 @@ let consoleActive=false;
 let consoleHistoryFetched=false;
 $(()=>{(async ()=>{
 if(isDLSProtocol()){
-    ServerEvents.onWSOpen.push(()=>{
+    ServerEvents.onAuthed.push(()=>{
         if(consoleHistoryFetched)return;
         //首先从服务器获取所有日志
         const requestUID=generateToken()
         ServerEvents.expectations.add({
-            type:"fetch_all_server_status_result",
+            type:"fetch_all_server_logs_result",
             requestUID,
             callback:msg=>{
                 msg.data.forEach(log=>
@@ -145,7 +145,8 @@ if(isDLSProtocol()){
             }
         })
         sendData(JSON.stringify({
-            type:"fetch_all_server_status",
+            type:"fetch_all_server_logs",
+            serverName,
             requestUID
         }))
         consoleHistoryFetched=true;
@@ -170,7 +171,7 @@ else{
         await new Promise(resolve=>setInterval(resolve,400))
         //如果控制台不活跃，那么刷新硬件状态后再等待600ms，如果控制台活跃，那么跳过状态刷新，把所有的机会留给控制台
         if(!consoleActive){
-            refreshHardwareStatus()
+            refreshHardwareStatus().catch(e=>notify("error","无法刷新硬件状态："+e))
             await new Promise(resolve=>setInterval(resolve,600))
         }
 

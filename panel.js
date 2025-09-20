@@ -1,6 +1,6 @@
 const host=localStorage.getItem("host")
 const token=localStorage.getItem("token")
-
+const serverName=localStorage.getItem("serverName")
 function activeConsole(){
 	//请求顶层窗口转发
 	window.parent.postMessage({type:"transfer",destination:"serverConsole",data:{type:"activeConsole",data:{}}})
@@ -14,6 +14,7 @@ function execute(cmd,callback){
 	if(isDLSProtocol()){
 		sendData(JSON.stringify({
 			type:"execute",
+			serverName,
 			data:cmd
 		}))
 		//由于协议暂时没有发送成功的提示，所以立刻闪灯
@@ -90,6 +91,7 @@ function get_server_status(callback){
         })
 		sendData(JSON.stringify({
 			type:"fetch_process_status",
+			serverName,
 			requestUID:requestUID
 		}))
 	}
@@ -206,8 +208,10 @@ function executeSimpleShortcut(number){
 function setShortcutButtonTitle(number){
 	const shortcut_conf=new JsonWeb(getConf(),["server_conf",host,"simple_shortcut_cmd_list",number])
 	const title=shortcut_conf.get("title")
-	document.getElementById("simple_shortcut"+number).innerHTML=title;
-	document.getElementById("show_simple_shortcut_custom_form"+number).innerHTML=title;
+	const shortcutButtonElement=document.getElementById("simple_shortcut"+number)
+	shortcutButtonElement.innerHTML=truncateWithEllipsis(title,shortcutButtonElement);
+	const settingsShortcutButtonElement=document.getElementById("show_simple_shortcut_custom_form"+number)
+	settingsShortcutButtonElement.innerHTML=truncateWithEllipsis(title,settingsShortcutButtonElement);
 }
 /*
 ////////////////
@@ -240,44 +244,60 @@ function logout(){
 	//跳转至登录页面
     indextologin({reason:"logout"})
 }
-function getHardwareStatus(callback){
-	if(isDLSProtocol()){
-        const requestUID=generateToken()
-        ServerEvents.expectations.add({
-            type:"fetch_hardware_status_result",
-            requestUID,
-            callback:msg=>{
-                callback(msg.data)
-            }
-        })
-		sendData(JSON.stringify({
-			type:"fetch_hardware_status",
-			requestUID
-		}))
-	}
-	else{
-		var settings = {
-			"url": host+"/server_status",
-			"method": "GET",
-			"timeout": 0,
-			"headers": {
-			},
-		};
+class RequestTimedoutError extends Error{
+	constructor(msg){
+		super(msg)
+	}	
+}
+async function getHardwareStatus(callback,timeout=5000){
+	return new Promise((resolve,reject)=>{
+		if(isDLSProtocol()){
+			const timeoutCheck=setTimeout(()=>{
+				reject(new RequestTimedoutError("请求硬件状态超时"))
+			},timeout)
+			const requestUID=generateToken()
+			ServerEvents.expectations.add({
+				type:"fetch_hardware_status_result",
+				requestUID,
+				callback:msg=>{
+					clearInterval(timeoutCheck)
+					callback(msg.data)
+					resolve(msg.data)
+				}
+			})
+			sendData(JSON.stringify({
+				type:"fetch_hardware_status",
+				serverName,
+				requestUID
+			}))
+		}
+		else{
+			var settings = {
+				"url": host+"/server_status",
+				"method": "GET",
+				"timeout": 0,
+				"headers": {
+				},
+			};
 
-		$.ajax(settings).done(function (response) {
-			callback(response);
-		}).fail((jqXHR, textStatus, errorThrown) => {
-			
-			switch(jqXHR.status){
-				case 502:
-					notify("error","目前无法连接至DLS API所在的远程服务器，错误码：502")
-					break;
-				default:
-					notify("error","请求服务器状态时发生未知错误：\n"+errorThrown);
-					break;
-			}
-		});
-	}
+			$.ajax(settings).done(function (response) {
+				callback(response);
+				resolve(response)
+			}).fail((jqXHR, textStatus, errorThrown) => {
+				
+				switch(jqXHR.status){
+					case 502:
+						notify("error","目前无法连接至DLS API所在的远程服务器，错误码：502")
+						reject("目前无法连接至DLS API所在的远程服务器，错误码：502")
+						break;
+					default:
+						notify("error","请求服务器状态时发生未知错误：\n"+errorThrown);
+						reject(errorThrown)
+						break;
+				}
+			});
+		}
+	})
 }
 async function refreshHardwareStatus(){
     //判断当前是否位于cpuchart所在页面
@@ -288,18 +308,18 @@ async function refreshHardwareStatus(){
 		//如果未加载，那么应该提示调用方自己此时无法执行
         return {}
     }
-	return new Promise(resolve=>getHardwareStatus(response=>{
-		document.getElementById("cpuchart").contentWindow.updateCPUStatus(response.cpu_rate)
-		updateMemStatus(response.mem_used,response.mem_total);
-		updateDiskStatus(response.disks_info)
-		resolve(response)
-	}))
+	const result=await getHardwareStatus(response=>{})
+	
+	document.getElementById("cpuchart").contentWindow.updateCPUStatus(result.cpu_rate)
+	updateMemStatus(result.mem_used,result.mem_total);
+	updateDiskStatus(result.disks_info)
+	return result
 }
 window.addEventListener('message', e=>{
 	if(e.data.type==="refreshHardwareStatus"){
 		//如果自己不是目标页面或此时还未加载，那么直接不处理
 		if(!document.getElementById("cpuchart")?.contentWindow?.updateCPUStatus)return;
-		refreshHardwareStatus();
+		refreshHardwareStatus().catch(e=>notify("无法刷新硬件状态："+e));
 	}
 })	
 function updateMemStatus(memUsed,memTotal){
@@ -308,41 +328,49 @@ function updateMemStatus(memUsed,memTotal){
 }
 let cachedDiskList=[]
 function updateDiskStatus(diskList){
+	//diskList是本次获取到的硬件信息中的最新硬盘数据
 	cachedDiskList=diskList;
 	const selectedDisk=(()=>{
 		//初始化当前服务器的盘符
-		if(!getConfObj("disk_info_selected_symbol")[host]){
-			let diskConf=getConfObj("disk_info_selected_symbol")
-			diskConf[host]=diskList[0].symbol;
-			setConfObj("disk_info_selected_symbol",diskConf);
-		}
+		initSelectedDisk()
 		//返回当前选择的盘符
 		return getConfObj("disk_info_selected_symbol")[host]
 		//return "C:"
 	})()
 	document.getElementById("disk_column").style.width="calc(calc(100% - 50px) * "+(()=>{
+		//考虑服务器硬盘变更造成的盘符不存在的问题
+		let diskFound=false
 		for(let disk of diskList){
 			if(disk.symbol===selectedDisk){
+				diskFound=true;
 				//改变文字显示
 				document.getElementById("disk_switch_button").innerHTML=disk.symbol+"   "+disk.disk_used+"GB/"+disk.disk_total+"GB";
 				//改变图表状态
-				return disk.disk_used/disk.disk_total;;
+				return disk.disk_used/disk.disk_total;
 			}
 		}
+		if(!diskFound)setSelectedDisk(diskList[0].symbol)
 		return 0;
 	})().toString()+")"
 }
 function switchDiskSymbol(){
 	for(let i in cachedDiskList){
 		if(cachedDiskList[i].symbol==getConfObj("disk_info_selected_symbol")[host]){
-
-			let diskConf=getConfObj("disk_info_selected_symbol")
-			diskConf[host]=cachedDiskList[(Number(i)+1)%cachedDiskList.length].symbol;
-			setConfObj("disk_info_selected_symbol",diskConf)
+			setSelectedDisk(cachedDiskList[(Number(i)+1)%cachedDiskList.length].symbol)
 			break;
 		}
 	}
 	updateDiskStatus(cachedDiskList);
+}
+function setSelectedDisk(symbol){
+	let diskConf=getConfObj("disk_info_selected_symbol")
+	diskConf[host]=symbol;
+	setConfObj("disk_info_selected_symbol",diskConf);
+}
+function initSelectedDisk(){
+	if(!getConfObj("disk_info_selected_symbol")[host]){
+		setSelectedDisk(cachedDiskList[0].symbol)
+	}
 }
 let load_request_interval=1000;
 //getHardwareStatus((response)=>{});

@@ -8,9 +8,8 @@ let wsRetryTimes=0
 function isDLSProtocol(){
     return localStorage.getItem("host").startsWith("wss://")||localStorage.getItem("host").startsWith("ws://")
 }
-
 function refreshWSConnection(server_address){
-    socket = new WebSocket(server_address+"?token="+token);
+    socket = new WebSocket(server_address);
     socket.onerror=event=>{
         console.log('Error type:', event.type); 
         console.log('WebSocket state:', event.target.readyState);
@@ -52,14 +51,22 @@ function refreshWSConnection(server_address){
             }
             ServerEvents.serverMsgHandler(parsedResult)
         });
+        //连接成功后先验证
+        sendData(JSON.stringify({
+            type:"auth",
+            serverName,
+            token
+        }))
         ServerEvents.onWSOpen.forEach(fn=>fn(event))
     };
     socket.onclose=event=>{
+        connectionOpened=false;
         if(event.code===4001){
             indextologin({reason:"tokenIncorrect"})
         }
         else{
-            notify("error","连接已关闭：\n"+JSON.stringify(event,undefined,4))
+            notify("error","连接异常关闭，正在重连，原因：\n"+JSON.stringify(event,undefined,4))
+            refreshWSConnection(server_address)
         }
     }
 }
@@ -74,6 +81,7 @@ function refreshWSConnection(server_address){
 
 class ServerEvents{
     static onWSOpen=[]
+    static onAuthed=[]
     static onConsoleUpdate=[]
     static onProcessStatusUpdate=[]
     static expectations=new Set()
@@ -81,7 +89,8 @@ class ServerEvents{
         switch(msg.error){
             //token错误会导致跳转至登录界面
             case "token_incorrect":location.href="login.html";break;
-            default:notify("error","暂时无法处理的错误："+msg.error)
+            case "pattern_not_provided":notify("error","网站需要更新：发送的数据中缺少"+msg.pattern+"字段");break;
+            default:notify("error","暂时无法处理的错误："+msg.error+"\n详情："+msg.msg)
         }
     }
     static serverMsgHandler(msg){
@@ -102,16 +111,31 @@ class ServerEvents{
                 ServerEvents.onProcessStatusUpdate.forEach(callback=>callback(msg))
                 break;
             }
+            case "authed":{
+                ServerEvents.onAuthed.forEach(callback=>callback(msg))
+                break;
+            }
             case "error":{
                 ServerEvents.onErrorMsg(msg)
                 break;
             }
+            case "fetch_all_server_logs_result":
+            case "fetch_process_status_result":
+            case "fetch_hardware_status_result":
             case "hb":break;
-            default:throw new Error("不支持的行为："+type)
+            default:{
+                notify("error","不支持的行为："+type)
+                throw new Error("不支持的行为："+type)
+            }
         }        
     }
 }
 
+/**
+ * 
+ * @param {string} data 要发送的JSON字符串，这段字符串将被检查是否合法
+ * @returns 
+ */
 function sendData(data){
     if(!connectionOpened){
         console.error("发送"+data+"时websocket还没有建立连接")
@@ -126,7 +150,12 @@ function sendData(data){
         console.error("将要被发送的数据："+data)
         return
     }
-    socket.send(data)    
+    try{
+        socket.send(data)    
+    }
+    catch(e){
+        notify("error","发送数据时出现错误："+e)
+    }
 }
 
 //////////往下就没啥用了
@@ -249,7 +278,7 @@ function showBrowserCertificateBlockedPopup(){
     // popup.appendChild(closeButton);
 
     // 添加浮窗内容
-    const userUnlockAPIURL=server_address.replace("ws","http")
+    //const userUnlockAPIURL=server_address.replace("ws","http")
     let popupContent = document.createElement('div');
     popupContent.innerHTML = `无法连接至服务器，这可能是您的网络设置有问题，或服务器网络出现问题<br>
 请刷新页面重试<br>

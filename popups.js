@@ -7,9 +7,16 @@ function notify(type,msg,time=5000){
     }
     // 创建悬浮窗元素
     const banner = document.createElement('div');
-    banner.id = 'top-banner';
+    banner.className = 'top-banner';
     banner.textContent = msg;
-
+    //await new Promise(resolve=>setTimeout(resolve,100))
+    //向下移动所有旧横幅
+    const existingBanners = document.querySelectorAll('.top-banner');
+    for(let b of existingBanners){
+        const currentTop = parseInt(b.style.top || '22');
+        b.style.top = (currentTop +60 + 12) + 'px'; // 12px 是间距
+        //await new Promise(resolve=>setTimeout(resolve,100))
+    };
     // 设置样式
     let bgColor = '#f9f9f9';
     let textColor = '#333';
@@ -31,13 +38,13 @@ function notify(type,msg,time=5000){
     
     banner.style.position = 'fixed';
     banner.style.top = '22px';
-    banner.style.left = '40%';
+    banner.style.left = '50%';
     banner.style.display = 'inline-block'; // 让宽度由内容决定
     banner.style.backdropFilter = 'blur(10px)';
     banner.style.backgroundColor = bgColor;
     banner.style.color = textColor;
     banner.style.whiteSpace = 'normal';    // 允许换行
-    banner.style.textAlign = 'left';       // 文字左对齐
+    banner.style.textAlign = 'center';       // 文字左对齐
     banner.style.padding = '16px 24px';    // 给内容留点空间
     banner.style.maxWidth = '80vw';        // 防止太宽撑满屏幕
     banner.style.boxSizing = 'border-box'; // 让 padding 不影响布局
@@ -45,17 +52,19 @@ function notify(type,msg,time=5000){
     banner.style.borderBottom = '1px solid #ccc';
     banner.style.borderRadius = '8px';
     banner.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+    banner.style.opacity = '1';
+    banner.style.filter = 'blur(0px)';
     banner.style.zIndex = zIndex.toString();
     if(zIndex<9999)zIndex++;
     else zIndex=9000;
-    banner.style.transform = 'translateY(-170%)'; // 初始在页面上方
+    banner.style.transform = 'translate(-50%, -170%)'; // 初始在页面上方
 
     // 添加淡入动画
-    banner.style.transition = 'transform 0.7s cubic-bezier(.36,.99,.64,1.02)';
+    banner.style.transition = 'transform 0.7s cubic-bezier(.36,.99,.64,1.02), top 0.7s cubic-bezier(.36,.99,.64,1.02), opacity 0.5s ease, filter 0.5s ease';
     //https://cubic-bezier.com/
 
 
-    setTimeout(() => {banner.style.transform = 'translateY(0)';}, 10); // 10ms 是为了确保 DOM 渲染完成
+    setTimeout(() => {banner.style.transform = 'translate(-50%, 0)';}, 10); // 10ms 是为了确保 DOM 渲染完成
 
     // 插入到页面顶部
     document.body.prepend(banner);
@@ -66,8 +75,9 @@ function notify(type,msg,time=5000){
     // 5秒后
     setTimeout(() => {
         //淡出动画
-        banner.style.transition = 'transform 0.5s cubic-bezier(.2,0,.48,.17)';
-        banner.style.transform = 'translateY(-170%)'; // 向上滑出
+        //banner.style.transform = 'translateY(-170%)';
+        banner.style.opacity = '0';
+        banner.style.filter = 'blur(6px)'; // 模糊程度可调
         setTimeout(() => {
             banner.remove();
           }, 1000); //清除
