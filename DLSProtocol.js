@@ -38,6 +38,12 @@ function refreshWSConnection(server_address){
         //showGeneralAlert("websocket成功，连接已建立")
         // 接收到后端消息时触发
         socket.addEventListener("message", event=> {
+            if(event.data.constructor.name==="Blob"){
+                notify("error","后端发送了二进制数据，然而协议中目前没有需要使用二进制传输的内容。")
+                blobToHex(event.data).then(result=>console.log("二进制数据具体内容：“"+result+"”"))
+                
+                return;
+            }
             //if(new RegExp(/username/).test(e.data.toString()))alert("发生未处理的错误：\n"+e.data)
             let parsedResult={}
             try{
@@ -45,6 +51,7 @@ function refreshWSConnection(server_address){
             }
             catch(e){
                 notify("error","服务器发送的数据无法被正常处理，请联系管理员。以下是详细的错误：\n"+e)
+                console.log(event.data.constructor.name)
                 console.log(event.data)
                 console.log("服务器发送了破损的数据："+e)
                 return
@@ -292,4 +299,13 @@ function showBrowserCertificateBlockedPopup(){
     // 显示浮窗
     overlay.style.display = 'flex';
 
+}
+
+function blobToHex(blob) {
+  return blob.arrayBuffer().then(buffer => {
+    const byteArray = new Uint8Array(buffer);
+    return Array.from(byteArray)
+      .map(byte => byte.toString(16).padStart(2, '0'))
+      .join('');
+  });
 }
