@@ -122,7 +122,7 @@ function parse_log(logs){
 }
 function appendConsoleLog(log){
     const newLogsContainer=document.createElement('span')
-    newLogsContainer.style["white-space"]="pre"
+    newLogsContainer.style["white-space"]="pre-wrap"
     newLogsContainer.innerHTML=color_html_convert(log)
     document.getElementById("console_log").appendChild(newLogsContainer).appendChild(document.createElement('br'))
     if(getConfObj("auto_scroll"))scrollToBottom();
